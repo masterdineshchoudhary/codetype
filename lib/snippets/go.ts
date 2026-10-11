@@ -89,3 +89,4 @@ export const GO_DRILL_SYMBOLS = [
   '&struct{}', 'sync.WaitGroup', 'context.Context', 'make(chan', 'range',
   'interface{}', 'any', 'select {', 'case <-', 'errors.New'
 ];
+

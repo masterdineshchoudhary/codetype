@@ -68,3 +68,4 @@ export const RUST_DRILL_SYMBOLS = [
   'match', 'impl<T>', 'pub fn', 'Vec<T>', '|x|', 'Arc::clone', '*guard',
   '#[derive(Debug)]', '&self', '&mut self', 'usize', 'i64'
 ];
+

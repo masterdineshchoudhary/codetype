@@ -133,3 +133,4 @@ export function normalizeCodeSnippet(
     lineCount: lines.length,
   };
 }
+
