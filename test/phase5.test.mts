@@ -127,6 +127,50 @@ const goSnippet = getLanguageSnippet('go');
 assert.ok(typeof goSnippet === 'string' && goSnippet.length > 20, 'Must retrieve non-empty Go snippet');
 assert.ok(goSnippet.includes('func ') || goSnippet.includes('package ') || goSnippet.includes('type '), 'Snippet must contain Go constructs');
 
-console.log('  ✓ Idiomatic Rust & Go snippets and symbol drills verified.\n');
 console.log('🎉 Task 3 verification passed!\n');
+
+// ============================================================
+// Test 4: Code Normalizer and Language Ingestion
+// ============================================================
+console.log('Test 4: Code Normalizer and Language Ingestion');
+
+import {
+  normalizeCodeSnippet,
+  detectLanguageFromFilename,
+} from '../lib/syntax/codeNormalizer.ts';
+
+// 1. Language detection from file extensions
+assert.strictEqual(detectLanguageFromFilename('main.rs'), 'rust');
+assert.strictEqual(detectLanguageFromFilename('server.go'), 'go');
+assert.strictEqual(detectLanguageFromFilename('app.tsx'), 'typescript');
+assert.strictEqual(detectLanguageFromFilename('script.py'), 'python');
+assert.strictEqual(detectLanguageFromFilename('schema.sql'), 'sql');
+assert.strictEqual(detectLanguageFromFilename('component.jsx'), 'javascript');
+assert.strictEqual(detectLanguageFromFilename('readme.md'), null);
+
+// 2. Normalization: Tab expansion to 2 spaces and CRLF conversion
+const rawWithTabsAndCrlf = '\r\n\tconst x = 1;\r\n\t\tconst y = 2;\r\n';
+const norm1 = normalizeCodeSnippet(rawWithTabsAndCrlf, { tabSize: 2 });
+assert.ok(!norm1.error, 'Must normalize without error');
+// Common indentation (1 tab) should be stripped from leading line, so first line has 0 indent and second has 2 spaces
+assert.strictEqual(norm1.normalized, 'const x = 1;\n  const y = 2;');
+assert.strictEqual(norm1.lineCount, 2);
+
+// 3. Normalization: Trailing space stripping
+const rawWithTrailing = 'const a = 10;   \nconst b = 20;   ';
+const norm2 = normalizeCodeSnippet(rawWithTrailing);
+assert.strictEqual(norm2.normalized, 'const a = 10;\nconst b = 20;');
+
+// 4. Validation: Empty or whitespace-only code
+const normEmpty = normalizeCodeSnippet('   \n\t  \n  ');
+assert.ok(normEmpty.error !== undefined, 'Must reject whitespace-only code');
+
+// 5. Validation: Max character length enforcement
+const hugeString = 'a'.repeat(6000);
+const normHuge = normalizeCodeSnippet(hugeString, { maxChars: 5000 });
+assert.ok(normHuge.error !== undefined && normHuge.error.includes('exceeds'), 'Must error on excess chars');
+
+console.log('  ✓ Code normalizer and file language detection verified.\n');
+console.log('🎉 Task 4 verification passed!\n');
+
 
