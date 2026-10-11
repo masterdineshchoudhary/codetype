@@ -121,9 +121,15 @@ export default function Home() {
     [generateKeybrDrill, getNextDrill]
   );
 
-  const [currentText, setCurrentText] = useState<string>(() =>
-    generateStandardWords(25, { punctuation: false, numbers: false })
-  );
+const DETERMINISTIC_INITIAL_TEXT =
+  'the be of and a to in he have it that for they with as not on she at by this we you do but his';
+
+  const [currentText, setCurrentText] = useState<string>(DETERMINISTIC_INITIAL_TEXT);
+
+  // Initialize randomized drill on client mount to prevent SSR hydration mismatch
+  useEffect(() => {
+    setCurrentText(getInitialText(INITIAL_CONFIG));
+  }, [getInitialText]);
 
   const handleTestComplete = useCallback(
     (testResult: TestResult) => {
