@@ -1,14 +1,20 @@
 /**
  * CodeType ResultsModal Component
- * Post-test comprehensive analytics modal with WPM, Accuracy, Consistency, and Heatmap.
+ * Comprehensive post-test analytics arena featuring:
+ * - Net WPM, Raw WPM, Accuracy, and Rhythm Consistency metrics
+ * - Interactive SVG Consistency Curve (second-by-second timeline)
+ * - Visual Weak-Key Heatmap keyboard
+ * - Key-to-key Flight-Time Latency Histogram with percentile telemetry
  */
 
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { HeatmapData, TestResult } from '../../types/typing';
 import { HeatmapKeyboard } from './HeatmapKeyboard';
-import { RotateCcw } from 'lucide-react';
+import { ConsistencyChart } from './ConsistencyChart';
+import { LatencyHistogram } from './LatencyHistogram';
+import { Activity, Keyboard, RotateCcw, TrendingUp } from 'lucide-react';
 
 export interface ResultsModalProps {
   result: TestResult;
@@ -16,13 +22,16 @@ export interface ResultsModalProps {
   onRestart: () => void;
 }
 
+type ResultTab = 'timeline' | 'heatmap' | 'latency';
+
 export function ResultsModal({ result, heatmap, onRestart }: ResultsModalProps) {
+  const [activeTab, setActiveTab] = useState<ResultTab>('timeline');
   const { metrics } = result;
 
   return (
-    <div className="flex flex-col items-center w-full max-w-4xl p-8 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl font-mono shadow-2xl animate-fade-in">
+    <div className="flex flex-col items-center w-full max-w-4xl p-6 sm:p-8 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-2xl font-mono shadow-2xl animate-fade-in">
       {/* Primary Metrics Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full mb-8 pb-6 border-b border-[var(--border-subtle)]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full mb-6 pb-6 border-b border-[var(--border-subtle)]">
         <div className="flex flex-col">
           <span className="text-xs uppercase text-[var(--text-dim)]">WPM</span>
           <span className="text-5xl font-black text-[var(--accent)] tracking-tight">
@@ -53,7 +62,7 @@ export function ResultsModal({ result, heatmap, onRestart }: ResultsModalProps) 
       </div>
 
       {/* Telemetry Breakdown */}
-      <div className="grid grid-cols-3 gap-4 w-full mb-8 text-xs text-[var(--text-dim)]">
+      <div className="grid grid-cols-3 gap-3 w-full mb-6 text-xs text-[var(--text-dim)]">
         <div className="p-3 bg-[var(--bg)] border border-[var(--border-subtle)] rounded-lg">
           <div className="text-[10px] uppercase">Characters</div>
           <div className="text-base font-semibold text-[var(--text-bright)] mt-1">
@@ -83,9 +92,56 @@ export function ResultsModal({ result, heatmap, onRestart }: ResultsModalProps) 
         </div>
       </div>
 
-      {/* Weak-Key Heatmap */}
-      <div className="w-full mb-8">
-        <HeatmapKeyboard heatmap={heatmap} />
+      {/* Visual Analytics Tab Switcher */}
+      <div className="flex items-center justify-between w-full mb-3 px-1 border-b border-[var(--border-subtle)] pb-2.5">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('timeline')}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors ${
+              activeTab === 'timeline'
+                ? 'bg-[var(--surface-hover)] text-[var(--accent)] font-bold border border-[var(--border-subtle)]'
+                : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
+            }`}
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>Consistency Curve</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('heatmap')}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors ${
+              activeTab === 'heatmap'
+                ? 'bg-[var(--surface-hover)] text-[var(--accent)] font-bold border border-[var(--border-subtle)]'
+                : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
+            }`}
+          >
+            <Keyboard className="w-3.5 h-3.5" />
+            <span>Weak-Key Heatmap</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('latency')}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors ${
+              activeTab === 'latency'
+                ? 'bg-[var(--surface-hover)] text-[var(--accent)] font-bold border border-[var(--border-subtle)]'
+                : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Flight Latency</span>
+          </button>
+        </div>
+
+        <span className="text-[10px] text-[var(--text-dim)] hidden sm:inline">
+          Rhythm Analytics
+        </span>
+      </div>
+
+      {/* Tab Panels */}
+      <div className="w-full mb-8 min-h-[220px]">
+        {activeTab === 'timeline' && <ConsistencyChart history={result.history} />}
+        {activeTab === 'heatmap' && <HeatmapKeyboard heatmap={heatmap} />}
+        {activeTab === 'latency' && <LatencyHistogram keystrokes={result.keystrokes} />}
       </div>
 
       {/* Restart CTA */}
@@ -104,4 +160,3 @@ export function ResultsModal({ result, heatmap, onRestart }: ResultsModalProps) 
     </div>
   );
 }
-

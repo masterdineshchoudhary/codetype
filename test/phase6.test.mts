@@ -77,6 +77,58 @@ const emptyDist = computeLatencyDistribution([]);
 assert.strictEqual(emptyDist.totalKeystrokes, 0);
 assert.strictEqual(emptyDist.medianMs, 0);
 
-console.log('  ✓ Flight-time distribution buckets, median, and p95 calculations verified.\n');
 console.log('🎉 Task 2 verification passed!\n');
+
+// ============================================================
+// Test 3: End-to-End Analytics Integration
+// ============================================================
+console.log('Test 3: End-to-End Analytics Integration');
+
+import type { TestResult } from '../types/typing.ts';
+
+const fullMockResult: TestResult = {
+  id: 'test_123',
+  timestamp: Date.now(),
+  mode: 'syntax',
+  config: {
+    mode: 'syntax',
+    standardOptions: { type: 'words', wordCount: 25, duration: 30, punctuation: false, numbers: false },
+    syntaxOptions: { language: 'rust', drillCategory: 'full-snippet', adaptiveWeakKeys: false },
+    soundProfile: 'thock',
+    soundVolume: 0.5,
+    caretStyle: 'line',
+    smoothCaret: true,
+    theme: 'monochrome',
+    zenMode: false,
+    blindMode: false,
+    strictBackspace: false,
+  },
+  targetText: 'fn main() {}',
+  metrics: {
+    wpm: 80,
+    rawWpm: 85,
+    accuracy: 98,
+    totalKeystrokes: 12,
+    correctCharacters: 12,
+    correctKeystrokes: 12,
+    incorrectKeystrokes: 0,
+    uncorrectedErrors: 0,
+    elapsedTime: 2,
+    consistency: 94,
+  },
+  history: mockHistory,
+  keystrokes: mockKeystrokes,
+  weakKeys: [],
+};
+
+// Check that analytics generators consume fullMockResult seamlessly
+const boundsCheck = computeTimelineBounds(fullMockResult.history);
+assert.strictEqual(boundsCheck.duration, 5);
+
+const latencyCheck = computeLatencyDistribution(fullMockResult.keystrokes);
+assert.strictEqual(latencyCheck.totalKeystrokes, 6);
+
+console.log('  ✓ Complete TestResult telemetry pipeline verified for Phase 6.\n');
+console.log('🎉 Task 3 verification passed!\n');
+
 
