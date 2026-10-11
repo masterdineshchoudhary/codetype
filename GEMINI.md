@@ -207,16 +207,19 @@ codetype/
 
 ---
 
-### Phase 5: Syntax Tokenizer & Real Code Ingestion ⏳ NEXT
-- [ ] **Zero-Lag Syntax Colorizer:**
-  - Classify tokens into syntax categories (keyword, string, operator, bracket, identifier) at initialization.
-  - Style characters with minimal CSS variable syntax tokens without increasing keystroke overhead.
-- [ ] **Expanded Language Libraries:**
+### Phase 5: Syntax Tokenizer & Real Code Ingestion ✅ COMPLETED
+- [x] **Zero-Lag Syntax Colorizer:**
+  - Classify tokens into syntax categories (keyword, string, operator, bracket, identifier) at initialization via `lib/syntax/tokenizer.ts`.
+  - Style characters with minimal CSS variable syntax tokens (`--syntax-*`) without increasing keystroke overhead.
+- [x] **Expanded Language Libraries:**
   - Add idiomatic snippets for **Rust** (`Option`, `Result`, pattern matching) and **Go** (goroutines, channels, error handling).
-- [ ] **Custom File / Snippet Loader:**
-  - Modal allowing users to paste code or drag-and-drop source code files with automatic indentation handling.
+- [x] **Custom File / Snippet Loader:**
+  - Modal allowing users to paste code or drag-and-drop source code files with automatic indentation handling and normalization.
 
-### Phase 6: Post-Test Rhythm & Consistency Charting ⏳ UPCOMING
+---
+
+### Phase 6: Post-Test Rhythm & Consistency Charting ⏳ NEXT
+
 - [ ] **SVG Consistency Chart (`components/results/ConsistencyChart.tsx`):**
   - Zero-dependency SVG timeline rendering live WPM and Raw WPM curves over test duration.
   - Point indicators for error moments and burst periods.
