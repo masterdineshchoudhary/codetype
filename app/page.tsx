@@ -652,12 +652,15 @@ const DETERMINISTIC_INITIAL_TEXT =
               status={status}
               caretCoords={caretCoords}
               caretStyle={config.caretStyle}
+              language={config.syntaxOptions.language}
+              isSyntaxMode={config.mode === 'syntax'}
               containerRef={containerRef}
               caretRef={caretRef}
               registerCharElement={registerCharElement}
               handleKeyDown={handleKeyDown}
               isPaletteOpen={isPaletteOpen}
             />
+
           </div>
         )}
       </section>

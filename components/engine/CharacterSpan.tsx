@@ -9,11 +9,12 @@
 'use client';
 
 import React, { memo, useEffect, useRef } from 'react';
-import type { CharacterStatus } from '../../types/typing';
+import type { CharacterStatus, SyntaxTokenType } from '../../types/typing';
 
 export interface CharacterSpanProps {
   char: string;
   index: number;
+  syntaxType?: SyntaxTokenType;
   registerCharElement: (index: number, el: HTMLElement | null) => void;
   getCharStatus?: (index: number) => CharacterStatus;
 }
@@ -21,6 +22,7 @@ export interface CharacterSpanProps {
 export const CharacterSpan = memo(function CharacterSpan({
   char,
   index,
+  syntaxType,
   registerCharElement,
 }: CharacterSpanProps) {
   const spanRef = useRef<HTMLSpanElement | null>(null);
@@ -65,10 +67,12 @@ export const CharacterSpan = memo(function CharacterSpan({
       ref={spanRef}
       data-index={index}
       data-status="pending"
+      data-syntax={syntaxType && syntaxType !== 'default' ? syntaxType : undefined}
       className="char-span inline-block select-none transition-colors duration-75 text-[var(--text-dim)]"
     >
       {char}
     </span>
   );
 });
+
 

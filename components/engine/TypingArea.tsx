@@ -7,16 +7,24 @@
 
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CharacterSpan } from './CharacterSpan';
 import { Caret } from './Caret';
-import type { CaretCoordinates, CaretStyle, EngineStatus } from '../../types/typing';
+import { tokenizeCode } from '../../lib/syntax/tokenizer';
+import type {
+  CaretCoordinates,
+  CaretStyle,
+  EngineStatus,
+  SupportedLanguage,
+} from '../../types/typing';
 
 export interface TypingAreaProps {
   targetText: string;
   status: EngineStatus;
   caretCoords: CaretCoordinates;
   caretStyle?: CaretStyle;
+  language?: SupportedLanguage;
+  isSyntaxMode?: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   caretRef: React.RefObject<HTMLDivElement | null>;
   registerCharElement: (index: number, el: HTMLElement | null) => void;
@@ -29,6 +37,8 @@ export function TypingArea({
   status,
   caretCoords,
   caretStyle = 'line',
+  language,
+  isSyntaxMode = false,
   containerRef,
   caretRef,
   registerCharElement,
@@ -38,6 +48,15 @@ export function TypingArea({
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wordsRef = useRef<HTMLDivElement | null>(null);
+
+  // Precompute syntax tokens once when targetText or language changes
+  const syntaxTokens = useMemo(() => {
+    if (isSyntaxMode && language) {
+      return tokenizeCode(targetText, language);
+    }
+    return null;
+  }, [targetText, isSyntaxMode, language]);
+
 
   // Auto-focus hidden input on mount and when palette closes
   useEffect(() => {
@@ -126,9 +145,11 @@ export function TypingArea({
               key={index}
               char={char}
               index={index}
+              syntaxType={syntaxTokens ? syntaxTokens[index] : undefined}
               registerCharElement={registerCharElement}
             />
           ))}
+
         </div>
       </div>
     </div>
