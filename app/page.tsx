@@ -16,6 +16,7 @@ import { ModeToggle } from '../components/controls/ModeToggle';
 import { SoundSelector } from '../components/controls/SoundSelector';
 import { LanguageSelector } from '../components/controls/LanguageSelector';
 import { CommandPalette } from '../components/controls/CommandPalette';
+import { CustomSnippetModal } from '../components/controls/CustomSnippetModal';
 import { MetricsOverlay } from '../components/engine/MetricsOverlay';
 import { MasteryBar } from '../components/engine/MasteryBar';
 import { TypingArea } from '../components/engine/TypingArea';
@@ -37,7 +38,8 @@ import type {
   TestResult,
   ThemeId,
 } from '../types/typing';
-import { Command, Palette, Sparkles, Terminal, Zap } from 'lucide-react';
+import { Command, FileCode, Palette, Sparkles, Terminal, Zap } from 'lucide-react';
+
 
 const INITIAL_CONFIG: EngineConfig = {
   mode: 'standard',
@@ -92,6 +94,7 @@ export default function Home() {
   } = useKeybrMastery();
 
   const [unlockedKeyBanner, setUnlockedKeyBanner] = useState<string | null>(null);
+  const [isCustomSnippetOpen, setIsCustomSnippetOpen] = useState<boolean>(false);
 
   const {
     profile: soundProfile,
@@ -209,10 +212,33 @@ const DETERMINISTIC_INITIAL_TEXT =
     resetTest(nextText);
   }, [config, getInitialText, resetTest]);
 
+  const handleApplyCustomSnippet = useCallback(
+    (normalizedCode: string, lang: SupportedLanguage) => {
+      handleConfigChange({
+        mode: 'syntax',
+        syntaxOptions: {
+          ...config.syntaxOptions,
+          language: lang,
+        },
+      });
+      setCurrentText(normalizedCode);
+      resetTest(normalizedCode);
+    },
+    [config.syntaxOptions, handleConfigChange, resetTest]
+  );
+
   // Command palette action list
   const paletteCommands = useMemo<CommandItem[]>(() => {
     return [
       // Test Actions
+      {
+        id: 'action-custom-snippet',
+        title: 'Custom Code: Paste / Upload Snippet',
+        subtitle: 'Load and type custom code with auto-normalization',
+        category: 'snippet',
+        keywords: ['custom', 'paste', 'upload', 'code', 'snippet', 'file'],
+        action: () => setIsCustomSnippetOpen(true),
+      },
       {
         id: 'action-restart',
         title: 'Restart Test',
@@ -221,6 +247,7 @@ const DETERMINISTIC_INITIAL_TEXT =
         keywords: ['reset', 'next', 'again', 'tab'],
         action: handleNextTest,
       },
+
       {
         id: 'action-toggle-zen',
         title: `Zen Mode: ${config.zenMode ? 'Turn OFF' : 'Turn ON'}`,
@@ -524,7 +551,8 @@ const DETERMINISTIC_INITIAL_TEXT =
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [handleNextTest, isPaletteOpen]);
 
-  const isZenActive = config.zenMode && status === 'running' && !isPaletteOpen;
+  const isZenActive =
+    config.zenMode && status === 'running' && !isPaletteOpen && !isCustomSnippetOpen;
 
   return (
     <main className="flex flex-col items-center justify-between min-h-screen px-4 py-8 max-w-6xl mx-auto font-mono">
@@ -539,6 +567,14 @@ const DETERMINISTIC_INITIAL_TEXT =
         onExecute={executePaletteSelected}
         onKeyDown={handlePaletteKeyDown}
         onClose={closePalette}
+      />
+
+      {/* Custom Snippet Ingestion Modal */}
+      <CustomSnippetModal
+        isOpen={isCustomSnippetOpen}
+        initialLanguage={config.syntaxOptions.language}
+        onClose={() => setIsCustomSnippetOpen(false)}
+        onApplySnippet={handleApplyCustomSnippet}
       />
 
       {/* Header & Controls (Fades in Zen mode when typing) */}
@@ -559,8 +595,18 @@ const DETERMINISTIC_INITIAL_TEXT =
             </span>
           </div>
 
-          {/* Right Header: Theme pill, Command Palette button & Audio selector */}
+          {/* Right Header: Theme pill, Command Palette button, Custom Code & Audio selector */}
           <div className="flex items-center gap-2.5">
+            {/* Custom Snippet Modal Pill */}
+            <button
+              onClick={() => setIsCustomSnippetOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono select-none bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border-subtle)] rounded-full text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors"
+              title="Paste Custom Code or Upload File"
+            >
+              <FileCode className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <span className="hidden sm:inline">Custom</span>
+            </button>
+
             {/* Command Palette Pill */}
             <button
               onClick={openPalette}
@@ -573,6 +619,7 @@ const DETERMINISTIC_INITIAL_TEXT =
                 ⌘K
               </kbd>
             </button>
+
 
             {/* Sound Profile Controls */}
             <SoundSelector
@@ -658,8 +705,9 @@ const DETERMINISTIC_INITIAL_TEXT =
               caretRef={caretRef}
               registerCharElement={registerCharElement}
               handleKeyDown={handleKeyDown}
-              isPaletteOpen={isPaletteOpen}
+              isPaletteOpen={isPaletteOpen || isCustomSnippetOpen}
             />
+
 
           </div>
         )}

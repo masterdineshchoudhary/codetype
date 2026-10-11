@@ -74,11 +74,14 @@ export function CommandPalette({
         return <Type className="w-3.5 h-3.5 text-purple-400" />;
       case 'caret':
         return <MousePointer className="w-3.5 h-3.5 text-amber-400" />;
+      case 'snippet':
+        return <Code2 className="w-3.5 h-3.5 text-cyan-400" />;
       case 'test':
       default:
         return <Sparkles className="w-3.5 h-3.5 text-orange-400" />;
     }
   };
+
 
   return (
     <div

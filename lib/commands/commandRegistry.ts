@@ -3,7 +3,7 @@
  * Manages action commands for Command Palette (Cmd+K / Tab+Enter)
  */
 
-export type CommandCategory = 'test' | 'mode' | 'language' | 'theme' | 'sound' | 'caret';
+export type CommandCategory = 'test' | 'mode' | 'language' | 'theme' | 'sound' | 'caret' | 'snippet';
 
 export interface CommandItem {
   id: string;

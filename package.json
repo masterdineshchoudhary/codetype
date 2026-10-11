@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types test/phase1.test.mts && node --experimental-strip-types test/phase3.test.mts && node --experimental-strip-types test/phase4.test.mts"
+    "test": "node --experimental-strip-types test/phase1.test.mts && node --experimental-strip-types test/phase3.test.mts && node --experimental-strip-types test/phase4.test.mts && node --experimental-strip-types test/phase5.test.mts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
