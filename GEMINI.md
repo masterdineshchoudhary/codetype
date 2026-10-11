@@ -196,16 +196,18 @@ codetype/
 
 ---
 
-### Phase 4: Keybr Progressive Mastery & Sequential Unlock Engine ⏳ NEXT
-- [ ] **Progressive Unlock Rules (`lib/algorithms/masteryAlgorithm.ts`):**
+### Phase 4: Keybr Progressive Mastery & Sequential Unlock Engine ✅ COMPLETED
+- [x] **Progressive Unlock Rules (`lib/algorithms/masteryAlgorithm.ts`):**
   - Implement sequential letter unlocking stage: starts with `e, n, i, t, r, l`.
   - Compute moving window confidence per unlocked key; trigger unlock of next letter when all active keys reach confidence $\ge 0.85$.
-- [ ] **Markov / N-Gram Generator:**
+- [x] **Markov / N-Gram Generator:**
   - Procedurally constructs syllables and pseudo-words combining only unlocked letters, heavily biasing toward the lowest confidence characters.
-- [ ] **Mastery Progress Bar UI:**
+- [x] **Mastery Progress Bar UI:**
   - Visual display showing current letter tier, unlocked alphabet status, and mastery percentages.
 
-### Phase 5: Syntax Tokenizer & Real Code Ingestion ⏳ UPCOMING
+---
+
+### Phase 5: Syntax Tokenizer & Real Code Ingestion ⏳ NEXT
 - [ ] **Zero-Lag Syntax Colorizer:**
   - Classify tokens into syntax categories (keyword, string, operator, bracket, identifier) at initialization.
   - Style characters with minimal CSS variable syntax tokens without increasing keystroke overhead.

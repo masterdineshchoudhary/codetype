@@ -1,12 +1,12 @@
 /**
- * CodeType Keybr-Style Adaptive Weak-Key Generator
+ * CodeType Keybr-Style Adaptive Weak-Key & Progressive Mastery Generator
  * Procedurally generates drill texts emphasizing user's weak keys and developer syntax tokens.
  */
 
-import type { HeatmapData, SupportedLanguage } from '../../types/typing';
-import { TYPESCRIPT_DRILL_SYMBOLS, TYPESCRIPT_SNIPPETS } from '../snippets/typescript';
-import { PYTHON_DRILL_SYMBOLS, PYTHON_SNIPPETS } from '../snippets/python';
-import { SQL_DRILL_SYMBOLS, SQL_SNIPPETS } from '../snippets/sql';
+import type { HeatmapData, KeybrMasteryState, SupportedLanguage } from '../../types/typing';
+import { TYPESCRIPT_DRILL_SYMBOLS, TYPESCRIPT_SNIPPETS } from '../snippets/typescript.ts';
+import { PYTHON_DRILL_SYMBOLS, PYTHON_SNIPPETS } from '../snippets/python.ts';
+import { SQL_DRILL_SYMBOLS, SQL_SNIPPETS } from '../snippets/sql.ts';
 
 export const COMMON_WORDS: string[] = [
   'the', 'be', 'of', 'and', 'a', 'to', 'in', 'he', 'have', 'it', 'that', 'for', 'they',
@@ -135,7 +135,6 @@ export function generateAdaptiveDrill(
     const roll = Math.random();
 
     if (weakChars.length > 0 && roll < 0.45) {
-      // Pick a weak char and wrap it into a realistic pseudo-token
       const targetChar = weakChars[Math.floor(Math.random() * weakChars.length)];
       const baseWord = keywords[Math.floor(Math.random() * keywords.length)];
 
@@ -146,7 +145,6 @@ export function generateAdaptiveDrill(
       } else if (['=', '+', '-', '*', '/'].includes(targetChar)) {
         resultWords.push(`${baseWord} ${targetChar} ${baseWord}`);
       } else {
-        // Alphanumeric weak char: find keywords containing this char or synthesize
         const matching = keywords.filter((k) => k.toLowerCase().includes(targetChar.toLowerCase()));
         if (matching.length > 0) {
           resultWords.push(matching[Math.floor(Math.random() * matching.length)]);
@@ -155,10 +153,8 @@ export function generateAdaptiveDrill(
         }
       }
     } else if (roll < 0.75) {
-      // Standard language keyword
       resultWords.push(keywords[Math.floor(Math.random() * keywords.length)]);
     } else {
-      // Language syntax symbol
       resultWords.push(symbolPool[Math.floor(Math.random() * symbolPool.length)]);
     }
   }
@@ -166,3 +162,65 @@ export function generateAdaptiveDrill(
   return resultWords.join(' ');
 }
 
+/**
+ * Keybr Progressive Mastery N-Gram Generator:
+ * Generates pronounceable syllables and pseudo-words using STRICTLY unlocked keys.
+ * Biases frequency towards current target key and lowest-confidence keys.
+ */
+export function generateKeybrMasteryDrill(
+  masteryState: KeybrMasteryState,
+  wordCount: number = 25
+): string {
+  const { unlockedKeys, currentKey, keyConfidences } = masteryState;
+  const VOWELS = ['a', 'e', 'i', 'o', 'u', 'y'];
+
+  const availableVowels = unlockedKeys.filter((k) => VOWELS.includes(k));
+  const availableConsonants = unlockedKeys.filter((k) => !VOWELS.includes(k));
+
+  // If no vowels unlocked, use full unlocked pool
+  const vowelPool = availableVowels.length > 0 ? availableVowels : unlockedKeys;
+  const consonantPool = availableConsonants.length > 0 ? availableConsonants : unlockedKeys;
+
+  // Find lowest confidence unlocked key
+  let lowestKey = currentKey;
+  let minConf = 1.0;
+  for (const k of unlockedKeys) {
+    const c = keyConfidences[k] ?? 0;
+    if (c < minConf) {
+      minConf = c;
+      lowestKey = k;
+    }
+  }
+
+  const words: string[] = [];
+  const syllableTemplates = ['CVC', 'CV', 'VC', 'CVCV', 'CVCC', 'VCV', 'CCVC'];
+
+  for (let i = 0; i < wordCount; i++) {
+    const template = syllableTemplates[Math.floor(Math.random() * syllableTemplates.length)];
+    let wordChars: string[] = [];
+
+    for (const charType of template) {
+      if (charType === 'V') {
+        wordChars.push(vowelPool[Math.floor(Math.random() * vowelPool.length)]);
+      } else {
+        wordChars.push(consonantPool[Math.floor(Math.random() * consonantPool.length)]);
+      }
+    }
+
+    // High bias: 50% of words include targetKey; 30% include lowest confidence key
+    const roll = Math.random();
+    if (roll < 0.50) {
+      // Force target key into word
+      const replaceIdx = Math.floor(Math.random() * wordChars.length);
+      wordChars[replaceIdx] = currentKey;
+    } else if (roll < 0.80) {
+      // Force lowest confidence key into word
+      const replaceIdx = Math.floor(Math.random() * wordChars.length);
+      wordChars[replaceIdx] = lowestKey;
+    }
+
+    words.push(wordChars.join(''));
+  }
+
+  return words.join(' ');
+}

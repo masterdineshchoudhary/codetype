@@ -12,7 +12,7 @@ import type {
   StandardWordCount,
   TestEngineMode,
 } from '../../types/typing';
-import { Code2, Hash, PenTool, Timer, Type } from 'lucide-react';
+import { Code2, Hash, PenTool, Sparkles, Timer, Type } from 'lucide-react';
 
 export interface ModeToggleProps {
   config: EngineConfig;
@@ -22,6 +22,8 @@ export interface ModeToggleProps {
 
 export function ModeToggle({ config, onChange, disabled = false }: ModeToggleProps) {
   const isStandard = config.mode === 'standard';
+  const isKeybr = config.mode === 'keybr';
+  const isSyntax = config.mode === 'syntax';
   const standardType = config.standardOptions.type;
   const currentWords = config.standardOptions.wordCount ?? 25;
   const currentDuration = config.standardOptions.duration ?? 30;
@@ -97,7 +99,7 @@ export function ModeToggle({ config, onChange, disabled = false }: ModeTogglePro
           disabled={disabled}
           onClick={() => handleModeChange('syntax')}
           className={`flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors ${
-            !isStandard
+            isSyntax
               ? 'text-[var(--text-bright)] bg-[var(--surface-hover)] font-medium'
               : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
           }`}
@@ -105,10 +107,22 @@ export function ModeToggle({ config, onChange, disabled = false }: ModeTogglePro
           <Code2 className="w-3.5 h-3.5" />
           Syntax
         </button>
+        <button
+          disabled={disabled}
+          onClick={() => handleModeChange('keybr')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors ${
+            isKeybr
+              ? 'text-[var(--text-bright)] bg-[var(--surface-hover)] font-medium text-[var(--accent)]'
+              : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          Keybr
+        </button>
       </div>
 
-      {/* Standard Mode Options */}
-      {isStandard ? (
+      {/* Mode Options */}
+      {isStandard && (
         <div className="flex items-center gap-3">
           {/* Subtype: Words vs Time */}
           <div className="flex items-center gap-1">
@@ -205,8 +219,10 @@ export function ModeToggle({ config, onChange, disabled = false }: ModeTogglePro
             </button>
           </div>
         </div>
-      ) : (
-        /* Syntax Mode Options */
+      )}
+
+      {/* Syntax Mode Options */}
+      {isSyntax && (
         <div className="flex items-center gap-3">
           <button
             disabled={disabled}
@@ -226,6 +242,14 @@ export function ModeToggle({ config, onChange, disabled = false }: ModeTogglePro
           >
             Adaptive Weak-Keys ({config.syntaxOptions.adaptiveWeakKeys ? 'ON' : 'OFF'})
           </button>
+        </div>
+      )}
+
+      {/* Keybr Mastery Mode Options */}
+      {isKeybr && (
+        <div className="flex items-center gap-2 text-[var(--accent)] font-medium">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Sequential Key Progression</span>
         </div>
       )}
     </div>

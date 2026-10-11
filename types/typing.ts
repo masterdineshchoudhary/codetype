@@ -7,7 +7,7 @@
 // Test Modes & Configuration
 // ==========================================
 
-export type TestEngineMode = 'standard' | 'syntax';
+export type TestEngineMode = 'standard' | 'syntax' | 'keybr';
 
 export type StandardTestType = 'words' | 'time' | 'quote' | 'zen';
 
@@ -218,6 +218,13 @@ export interface CharacterAnalytics {
 }
 
 export type HeatmapData = Record<string, CharacterAnalytics>;
+
+export interface KeybrMasteryState {
+  unlockedKeys: string[];
+  currentKey: string;
+  keyConfidences: Record<string, number>;
+  overallMastery: number; // Percentage 0 - 100
+}
 
 // ==========================================
 // Engine Status & Lifecycle

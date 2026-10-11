@@ -9,6 +9,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTypingEngine } from '../hooks/useTypingEngine';
 import { useAdaptiveLearning } from '../hooks/useAdaptiveLearning';
+import { useKeybrMastery } from '../hooks/useKeybrMastery';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 import { useCommandPalette } from '../hooks/useCommandPalette';
 import { ModeToggle } from '../components/controls/ModeToggle';
@@ -16,6 +17,7 @@ import { SoundSelector } from '../components/controls/SoundSelector';
 import { LanguageSelector } from '../components/controls/LanguageSelector';
 import { CommandPalette } from '../components/controls/CommandPalette';
 import { MetricsOverlay } from '../components/engine/MetricsOverlay';
+import { MasteryBar } from '../components/engine/MasteryBar';
 import { TypingArea } from '../components/engine/TypingArea';
 import { ResultsModal } from '../components/results/ResultsModal';
 import { generateStandardWords } from '../lib/algorithms/keybrGenerator';
@@ -35,7 +37,7 @@ import type {
   TestResult,
   ThemeId,
 } from '../types/typing';
-import { Command, Palette, Terminal, Zap } from 'lucide-react';
+import { Command, Palette, Sparkles, Terminal, Zap } from 'lucide-react';
 
 const INITIAL_CONFIG: EngineConfig = {
   mode: 'standard',
@@ -82,6 +84,14 @@ export default function Home() {
   }, []);
 
   const { heatmap, recordSession, getNextDrill } = useAdaptiveLearning();
+  const {
+    masteryState,
+    recordKeybrSession,
+    generateDrill: generateKeybrDrill,
+    resetMastery,
+  } = useKeybrMastery();
+
+  const [unlockedKeyBanner, setUnlockedKeyBanner] = useState<string | null>(null);
 
   const {
     profile: soundProfile,
@@ -95,7 +105,9 @@ export default function Home() {
   // Helper to generate text according to current config
   const getInitialText = useCallback(
     (cfg: EngineConfig): string => {
-      if (cfg.mode === 'standard') {
+      if (cfg.mode === 'keybr') {
+        return generateKeybrDrill(25);
+      } else if (cfg.mode === 'standard') {
         const count =
           cfg.standardOptions.type === 'words' ? (cfg.standardOptions.wordCount ?? 25) : 50;
         return generateStandardWords(count, {
@@ -106,7 +118,7 @@ export default function Home() {
         return getNextDrill(cfg.syntaxOptions.language, cfg.syntaxOptions.adaptiveWeakKeys);
       }
     },
-    [getNextDrill]
+    [generateKeybrDrill, getNextDrill]
   );
 
   const [currentText, setCurrentText] = useState<string>(() =>
@@ -116,8 +128,14 @@ export default function Home() {
   const handleTestComplete = useCallback(
     (testResult: TestResult) => {
       recordSession(testResult);
+      if (config.mode === 'keybr') {
+        const { unlockedNewKey } = recordKeybrSession(testResult.keystrokes);
+        if (unlockedNewKey) {
+          setUnlockedKeyBanner(unlockedNewKey);
+        }
+      }
     },
-    [recordSession]
+    [config.mode, recordKeybrSession, recordSession]
   );
 
   const {
@@ -339,6 +357,28 @@ export default function Home() {
           }),
       },
       {
+        id: 'mode-keybr',
+        title: 'Mode: Keybr Progressive Mastery',
+        subtitle: 'Sequential letter unlocking & n-gram drills',
+        category: 'mode',
+        keywords: ['keybr', 'unlock', 'progression', 'mastery', 'alphabet'],
+        action: () =>
+          handleConfigChange({
+            mode: 'keybr',
+          }),
+      },
+      {
+        id: 'action-reset-keybr',
+        title: 'Reset Keybr Mastery Progress',
+        subtitle: 'Re-lock letters back to initial 6 home keys',
+        category: 'test',
+        keywords: ['reset', 'keybr', 'clear'],
+        action: () => {
+          resetMastery();
+          handleNextTest();
+        },
+      },
+      {
         id: 'mode-time-15',
         title: 'Mode: Timed Sprint (15s)',
         category: 'mode',
@@ -448,6 +488,7 @@ export default function Home() {
     handleSetCaretStyle,
     setSoundProfile,
     handleConfigChange,
+    resetMastery,
   ]);
 
   const {
@@ -565,6 +606,33 @@ export default function Home() {
         ) : (
           /* Live Typing Arena */
           <div className="flex flex-col items-center w-full max-w-4xl">
+            {/* New Key Unlocked Notification Banner */}
+            {unlockedKeyBanner && (
+              <div className="flex items-center justify-between w-full px-4 py-2.5 mb-4 bg-amber-950/60 border border-amber-500/80 rounded-xl text-amber-200 text-xs font-mono shadow-md animate-bounce">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span>
+                    🎉 Mastered current tier! Unlocked new letter:{' '}
+                    <strong className="uppercase text-amber-300 text-sm">
+                      &apos;{unlockedKeyBanner}&apos;
+                    </strong>
+                    !
+                  </span>
+                </div>
+                <button
+                  onClick={() => setUnlockedKeyBanner(null)}
+                  className="px-2 py-0.5 rounded bg-amber-900/50 hover:bg-amber-900 text-[10px] text-amber-300 border border-amber-700/60 transition-colors"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
+            {/* Keybr Mastery Progress Bar */}
+            {config.mode === 'keybr' && (
+              <MasteryBar masteryState={masteryState} />
+            )}
+
             <MetricsOverlay
               metrics={metrics}
               status={status}
