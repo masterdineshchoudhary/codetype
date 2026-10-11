@@ -9,6 +9,7 @@ import type { KeySoundType, SoundProfile } from '../../types/typing';
 export class SoundSynth {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
+  private compressor: DynamicsCompressorNode | null = null;
   private profile: SoundProfile = 'thock';
   private volume: number = 0.5;
   private isMuted: boolean = false;
@@ -38,7 +39,17 @@ export class SoundSynth {
       // Master gain node
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
-      this.masterGain.connect(this.ctx.destination);
+
+      // Dynamics Compressor acting as master peak limiter for 160+ WPM bursts
+      this.compressor = this.ctx.createDynamicsCompressor();
+      this.compressor.threshold.setValueAtTime(-12, this.ctx.currentTime);
+      this.compressor.knee.setValueAtTime(6, this.ctx.currentTime);
+      this.compressor.ratio.setValueAtTime(12, this.ctx.currentTime);
+      this.compressor.attack.setValueAtTime(0.003, this.ctx.currentTime);
+      this.compressor.release.setValueAtTime(0.05, this.ctx.currentTime);
+
+      this.masterGain.connect(this.compressor);
+      this.compressor.connect(this.ctx.destination);
 
       // Pre-render a 100ms white noise buffer for tactile transient clicks
       this.noiseBuffer = this.createNoiseBuffer(this.ctx, 0.1);
@@ -52,6 +63,34 @@ export class SoundSynth {
 
     return this.ctx;
   }
+
+  /**
+   * Proactively resumes AudioContext if suspended by browser autoplay policy
+   * or OS background tab suspension.
+   */
+  public async resumeContext(): Promise<boolean> {
+    if (typeof window === 'undefined') return false;
+    const ctx = this.initContext();
+    if (!ctx) return false;
+
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    return ctx.state === 'running';
+  }
+
+  /**
+   * Returns whether audio context is initialized and active
+   */
+  public isAudioActive(): boolean {
+    return this.ctx !== null && this.ctx.state === 'running';
+  }
+
 
   /**
    * Pre-allocates a short mono white noise buffer for switch mechanical contact transients.

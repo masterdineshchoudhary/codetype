@@ -38,6 +38,30 @@ export function useSoundEffects() {
     }
   }, [synth]);
 
+  // Proactively resume AudioContext on user gesture, tab visibility, or window focus
+  useEffect(() => {
+    const handleResume = () => {
+      synth.resumeContext();
+    };
+
+    window.addEventListener('pointerdown', handleResume, { once: true, passive: true });
+    window.addEventListener('keydown', handleResume, { once: true, passive: true });
+    window.addEventListener('focus', handleResume, { passive: true });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        synth.resumeContext();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      window.removeEventListener('focus', handleResume);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [synth]);
+
+
   const setProfile = useCallback(
     (newProfile: SoundProfile) => {
       setProfileState(newProfile);
