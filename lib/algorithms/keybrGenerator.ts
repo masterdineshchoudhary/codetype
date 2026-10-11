@@ -7,6 +7,8 @@ import type { HeatmapData, KeybrMasteryState, SupportedLanguage } from '../../ty
 import { TYPESCRIPT_DRILL_SYMBOLS, TYPESCRIPT_SNIPPETS } from '../snippets/typescript.ts';
 import { PYTHON_DRILL_SYMBOLS, PYTHON_SNIPPETS } from '../snippets/python.ts';
 import { SQL_DRILL_SYMBOLS, SQL_SNIPPETS } from '../snippets/sql.ts';
+import { RUST_DRILL_SYMBOLS, RUST_SNIPPETS } from '../snippets/rust.ts';
+import { GO_DRILL_SYMBOLS, GO_SNIPPETS } from '../snippets/go.ts';
 
 export const COMMON_WORDS: string[] = [
   'the', 'be', 'of', 'and', 'a', 'to', 'in', 'he', 'have', 'it', 'that', 'for', 'they',
@@ -94,6 +96,10 @@ export function getLanguageSnippet(language: SupportedLanguage): string {
       return TYPESCRIPT_SNIPPETS[Math.floor(Math.random() * TYPESCRIPT_SNIPPETS.length)];
     case 'python':
       return PYTHON_SNIPPETS[Math.floor(Math.random() * PYTHON_SNIPPETS.length)];
+    case 'rust':
+      return RUST_SNIPPETS[Math.floor(Math.random() * RUST_SNIPPETS.length)];
+    case 'go':
+      return GO_SNIPPETS[Math.floor(Math.random() * GO_SNIPPETS.length)];
     case 'sql':
       return SQL_SNIPPETS[Math.floor(Math.random() * SQL_SNIPPETS.length)];
     default:
@@ -125,9 +131,14 @@ export function generateAdaptiveDrill(
     symbolPool = PYTHON_DRILL_SYMBOLS;
   } else if (language === 'sql') {
     symbolPool = SQL_DRILL_SYMBOLS;
+  } else if (language === 'rust') {
+    symbolPool = RUST_DRILL_SYMBOLS;
+  } else if (language === 'go') {
+    symbolPool = GO_DRILL_SYMBOLS;
   } else {
     symbolPool = TYPESCRIPT_DRILL_SYMBOLS;
   }
+
 
   const resultWords: string[] = [];
 

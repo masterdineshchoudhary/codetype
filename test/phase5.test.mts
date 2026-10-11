@@ -102,5 +102,31 @@ const sqlCode = 'SELECT id FROM users;';
 const sqlTokens = tokenizeCode(sqlCode, 'sql');
 assert.strictEqual(sqlTokens[0], 'keyword', 'SQL SELECT should be keyword');
 
-console.log('  ✓ Syntax tokenizer correctly classifies keywords, strings, comments, numbers, types, and operators.\n');
 console.log('🎉 Task 2 verification passed!\n');
+
+// ============================================================
+// Test 3: Rust & Go Snippets and Drill Symbols
+// ============================================================
+console.log('Test 3: Rust & Go Snippets and Drill Symbols');
+
+import { RUST_SNIPPETS, RUST_DRILL_SYMBOLS } from '../lib/snippets/rust.ts';
+import { GO_SNIPPETS, GO_DRILL_SYMBOLS } from '../lib/snippets/go.ts';
+import { getLanguageSnippet } from '../lib/algorithms/keybrGenerator.ts';
+
+// Verify Rust snippets
+assert.ok(Array.isArray(RUST_SNIPPETS) && RUST_SNIPPETS.length >= 4, 'Must provide >= 4 Rust snippets');
+assert.ok(RUST_DRILL_SYMBOLS.length >= 8, 'Must provide >= 8 Rust drill symbols');
+const rsSnippet = getLanguageSnippet('rust');
+assert.ok(typeof rsSnippet === 'string' && rsSnippet.length > 20, 'Must retrieve non-empty Rust snippet');
+assert.ok(rsSnippet.includes('fn ') || rsSnippet.includes('struct ') || rsSnippet.includes('impl '), 'Snippet must contain Rust constructs');
+
+// Verify Go snippets
+assert.ok(Array.isArray(GO_SNIPPETS) && GO_SNIPPETS.length >= 4, 'Must provide >= 4 Go snippets');
+assert.ok(GO_DRILL_SYMBOLS.length >= 8, 'Must provide >= 8 Go drill symbols');
+const goSnippet = getLanguageSnippet('go');
+assert.ok(typeof goSnippet === 'string' && goSnippet.length > 20, 'Must retrieve non-empty Go snippet');
+assert.ok(goSnippet.includes('func ') || goSnippet.includes('package ') || goSnippet.includes('type '), 'Snippet must contain Go constructs');
+
+console.log('  ✓ Idiomatic Rust & Go snippets and symbol drills verified.\n');
+console.log('🎉 Task 3 verification passed!\n');
+
