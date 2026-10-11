@@ -24,6 +24,14 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
       accent: '#e2b714',
       errorColor: '#ca4754',
       errorExtra: '#7e2a33',
+      syntaxKeyword: '#c678dd',
+      syntaxString: '#98c379',
+      syntaxComment: '#5c6370',
+      syntaxNumber: '#d19a66',
+      syntaxOperator: '#56b6c2',
+      syntaxFunction: '#61afef',
+      syntaxType: '#e5c07b',
+      syntaxPunctuation: '#abb2bf',
     },
   },
   carbon: {
@@ -40,6 +48,14 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
       accent: '#33b1ff',
       errorColor: '#fa4d56',
       errorExtra: '#750e13',
+      syntaxKeyword: '#ee5396',
+      syntaxString: '#25be6a',
+      syntaxComment: '#6f6f6f',
+      syntaxNumber: '#08bdba',
+      syntaxOperator: '#33b1ff',
+      syntaxFunction: '#78a9ff',
+      syntaxType: '#be95ff',
+      syntaxPunctuation: '#c6c6c6',
     },
   },
   matrix: {
@@ -56,6 +72,14 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
       accent: '#00ff41',
       errorColor: '#ff3344',
       errorExtra: '#66111a',
+      syntaxKeyword: '#00ff41',
+      syntaxString: '#20c20e',
+      syntaxComment: '#1b5e20',
+      syntaxNumber: '#54ff82',
+      syntaxOperator: '#39ff14',
+      syntaxFunction: '#00e676',
+      syntaxType: '#69f0ae',
+      syntaxPunctuation: '#47e66f',
     },
   },
   nord: {
@@ -72,6 +96,14 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
       accent: '#88c0d0',
       errorColor: '#bf616a',
       errorExtra: '#5e3035',
+      syntaxKeyword: '#81a1c1',
+      syntaxString: '#a3be8c',
+      syntaxComment: '#616e88',
+      syntaxNumber: '#b48ead',
+      syntaxOperator: '#88c0d0',
+      syntaxFunction: '#8fbcbb',
+      syntaxType: '#ebcb8b',
+      syntaxPunctuation: '#d8dee9',
     },
   },
   cyberpunk: {
@@ -88,6 +120,14 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
       accent: '#fcee0a',
       errorColor: '#ff0055',
       errorExtra: '#770028',
+      syntaxKeyword: '#ff0055',
+      syntaxString: '#00f0ff',
+      syntaxComment: '#6d6199',
+      syntaxNumber: '#fcee0a',
+      syntaxOperator: '#ff5500',
+      syntaxFunction: '#39ff14',
+      syntaxType: '#d600ff',
+      syntaxPunctuation: '#ffffff',
     },
   },
 };
@@ -111,7 +151,18 @@ export function applyTheme(themeId: ThemeId): void {
   root.style.setProperty('--accent', preset.colors.accent);
   root.style.setProperty('--error-color', preset.colors.errorColor);
   root.style.setProperty('--error-extra', preset.colors.errorExtra);
+
+  // Apply syntax variables
+  root.style.setProperty('--syntax-keyword', preset.colors.syntaxKeyword);
+  root.style.setProperty('--syntax-string', preset.colors.syntaxString);
+  root.style.setProperty('--syntax-comment', preset.colors.syntaxComment);
+  root.style.setProperty('--syntax-number', preset.colors.syntaxNumber);
+  root.style.setProperty('--syntax-operator', preset.colors.syntaxOperator);
+  root.style.setProperty('--syntax-function', preset.colors.syntaxFunction);
+  root.style.setProperty('--syntax-type', preset.colors.syntaxType);
+  root.style.setProperty('--syntax-punctuation', preset.colors.syntaxPunctuation);
 }
+
 
 /**
  * Gets saved theme from localStorage, defaulting to 'monochrome'

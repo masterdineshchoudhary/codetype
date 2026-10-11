@@ -47,6 +47,17 @@ export interface SyntaxModeOptions {
   targetSymbols?: string[];
 }
 
+export type SyntaxTokenType =
+  | 'keyword'
+  | 'string'
+  | 'comment'
+  | 'number'
+  | 'operator'
+  | 'punctuation'
+  | 'function'
+  | 'type'
+  | 'default';
+
 export type ThemeId = 'monochrome' | 'carbon' | 'matrix' | 'nord' | 'cyberpunk';
 
 export interface ThemeColors {
@@ -60,6 +71,15 @@ export interface ThemeColors {
   accent: string;
   errorColor: string;
   errorExtra: string;
+  // Syntax Highlighting Tokens
+  syntaxKeyword: string;
+  syntaxString: string;
+  syntaxComment: string;
+  syntaxNumber: string;
+  syntaxOperator: string;
+  syntaxFunction: string;
+  syntaxType: string;
+  syntaxPunctuation: string;
 }
 
 export interface ThemePreset {
