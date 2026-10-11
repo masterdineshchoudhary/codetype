@@ -28,6 +28,8 @@ import {
   storeTheme,
   THEME_PRESETS,
 } from '../lib/themes/themeDefinitions';
+import { ThemeSelector } from '../components/controls/ThemeSelector';
+import { KeyboardMap } from '../components/engine/KeyboardMap';
 import type { CommandItem } from '../lib/commands/commandRegistry';
 import type {
   CaretStyle,
@@ -38,7 +40,7 @@ import type {
   TestResult,
   ThemeId,
 } from '../types/typing';
-import { Command, FileCode, Palette, Sparkles, Terminal, Zap } from 'lucide-react';
+import { Command, FileCode, Keyboard, Palette, Sparkles, Terminal, X, Zap } from 'lucide-react';
 
 
 const INITIAL_CONFIG: EngineConfig = {
@@ -158,6 +160,8 @@ const DETERMINISTIC_INITIAL_TEXT =
     registerCharElement,
     handleKeyDown,
     resetTest,
+    exitTyping,
+    subscribeActiveChar,
     result,
   } = useTypingEngine({
     targetText: currentText,
@@ -168,6 +172,32 @@ const DETERMINISTIC_INITIAL_TEXT =
     },
     onComplete: handleTestComplete,
   });
+
+  const [showKeyboardMap, setShowKeyboardMap] = useState<boolean>(true);
+
+  // Load keyboard map visibility preference
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('codetype_show_keymap');
+      if (saved !== null) {
+        setShowKeyboardMap(saved === 'true');
+      }
+    } catch {
+      // Storage access fallback
+    }
+  }, []);
+
+  const handleToggleKeyboardMap = useCallback(() => {
+    setShowKeyboardMap((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('codetype_show_keymap', String(next));
+      } catch {
+        // Storage access fallback
+      }
+      return next;
+    });
+  }, []);
 
   // Handle configuration changes
   const handleConfigChange = useCallback(
@@ -248,6 +278,22 @@ const DETERMINISTIC_INITIAL_TEXT =
         action: handleNextTest,
       },
 
+      {
+        id: 'action-exit-typing',
+        title: 'Exit Typing Mode',
+        subtitle: 'Reset active test back to idle (Esc)',
+        category: 'test',
+        keywords: ['exit', 'cancel', 'stop', 'quit', 'escape'],
+        action: exitTyping,
+      },
+      {
+        id: 'action-toggle-keymap',
+        title: `Keyboard Map: ${showKeyboardMap ? 'Turn OFF' : 'Turn ON'}`,
+        subtitle: 'Toggle on-screen interactive keyboard guide',
+        category: 'test',
+        keywords: ['keyboard', 'map', 'keymap', 'layout', 'visual'],
+        action: handleToggleKeyboardMap,
+      },
       {
         id: 'action-toggle-zen',
         title: `Zen Mode: ${config.zenMode ? 'Turn OFF' : 'Turn ON'}`,
@@ -522,6 +568,9 @@ const DETERMINISTIC_INITIAL_TEXT =
     setSoundProfile,
     handleConfigChange,
     resetMastery,
+    exitTyping,
+    showKeyboardMap,
+    handleToggleKeyboardMap,
   ]);
 
   const {
@@ -539,17 +588,25 @@ const DETERMINISTIC_INITIAL_TEXT =
     commands: paletteCommands,
   });
 
-  // Global Tab = quick restart (when palette is closed)
+  // Global Tab = quick restart; Global Escape = exit typing mode
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Tab' && !isPaletteOpen) {
         e.preventDefault();
         handleNextTest();
+      } else if (
+        e.key === 'Escape' &&
+        status === 'running' &&
+        !isPaletteOpen &&
+        !isCustomSnippetOpen
+      ) {
+        e.preventDefault();
+        exitTyping();
       }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [handleNextTest, isPaletteOpen]);
+  }, [exitTyping, handleNextTest, isCustomSnippetOpen, isPaletteOpen, status]);
 
   const isZenActive =
     config.zenMode && status === 'running' && !isPaletteOpen && !isCustomSnippetOpen;
@@ -595,8 +652,30 @@ const DETERMINISTIC_INITIAL_TEXT =
             </span>
           </div>
 
-          {/* Right Header: Theme pill, Command Palette button, Custom Code & Audio selector */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Header: Theme selector, Keymap toggle, Custom Snippet, Command Palette & Audio */}
+          <div className="flex items-center gap-2">
+            {/* Theme Selector (5 Curated Presets) */}
+            <ThemeSelector
+              currentTheme={config.theme}
+              onThemeChange={handleSetTheme}
+              disabled={status === 'running'}
+            />
+
+            {/* Keyboard Map Toggle Button */}
+            <button
+              type="button"
+              onClick={handleToggleKeyboardMap}
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono select-none border rounded-full transition-colors ${
+                showKeyboardMap
+                  ? 'bg-[var(--surface-hover)] border-[var(--accent)] text-[var(--accent)] shadow-sm'
+                  : 'bg-[var(--surface)] border-[var(--border-subtle)] text-[var(--text-dim)] hover:text-[var(--text-bright)]'
+              }`}
+              title="Toggle Keyboard Map"
+            >
+              <Keyboard className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Keymap</span>
+            </button>
+
             {/* Custom Snippet Modal Pill */}
             <button
               onClick={() => setIsCustomSnippetOpen(true)}
@@ -619,7 +698,6 @@ const DETERMINISTIC_INITIAL_TEXT =
                 ⌘K
               </kbd>
             </button>
-
 
             {/* Sound Profile Controls */}
             <SoundSelector
@@ -686,6 +764,25 @@ const DETERMINISTIC_INITIAL_TEXT =
               <MasteryBar masteryState={masteryState} />
             )}
 
+            {/* Active Sprint Exit Button */}
+            {status === 'running' && (
+              <div className="flex items-center justify-between w-full max-w-4xl mb-3 px-1 animate-fade-in">
+                <span className="text-xs text-[var(--text-dim)] font-mono flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Typing sprint active
+                </span>
+                <button
+                  type="button"
+                  onClick={exitTyping}
+                  className="flex items-center gap-1.5 px-3 py-1 text-xs font-mono rounded-full bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-red-500/50 hover:border-red-500 text-red-400 hover:text-red-300 transition-colors shadow-sm"
+                  title="Exit typing mode (or press Esc)"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Exit Typing (Esc)</span>
+                </button>
+              </div>
+            )}
+
             <MetricsOverlay
               metrics={metrics}
               status={status}
@@ -708,7 +805,17 @@ const DETERMINISTIC_INITIAL_TEXT =
               isPaletteOpen={isPaletteOpen || isCustomSnippetOpen}
             />
 
-
+            {/* Interactive On-Screen Keyboard Map */}
+            {showKeyboardMap && (
+              <div className="w-full mt-6 animate-fade-in">
+                <KeyboardMap
+                  subscribeActiveChar={subscribeActiveChar}
+                  unlockedKeys={config.mode === 'keybr' ? masteryState.unlockedKeys : undefined}
+                  isKeybrMode={config.mode === 'keybr'}
+                  heatmap={heatmap}
+                />
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -720,6 +827,12 @@ const DETERMINISTIC_INITIAL_TEXT =
         }`}
       >
         <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 text-red-400/90">
+            <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface)] border border-red-500/40 text-[10px]">
+              Esc
+            </kbd>{' '}
+            exit typing
+          </span>
           <span className="flex items-center gap-1.5">
             <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface)] border border-[var(--border-subtle)] text-[10px]">
               Tab
@@ -741,10 +854,25 @@ const DETERMINISTIC_INITIAL_TEXT =
         </div>
 
         <div className="flex items-center gap-3 text-[11px]">
-          <span className="flex items-center gap-1 text-[var(--text-dim)]">
-            <Palette className="w-3.5 h-3.5" />
+          <button
+            type="button"
+            onClick={() => {
+              const themeList: ThemeId[] = [
+                'monochrome',
+                'carbon',
+                'matrix',
+                'nord',
+                'cyberpunk',
+              ];
+              const nextIdx = (themeList.indexOf(config.theme) + 1) % themeList.length;
+              handleSetTheme(themeList[nextIdx]);
+            }}
+            className="flex items-center gap-1 text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors cursor-pointer"
+            title="Click to cycle theme (5 curated presets)"
+          >
+            <Palette className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span className="capitalize">{THEME_PRESETS[config.theme]?.name || config.theme}</span>
-          </span>
+          </button>
           <span className="text-[var(--border-subtle)]">|</span>
           <span className="flex items-center gap-1 text-[var(--accent)]">
             <Zap className="w-3.5 h-3.5" />

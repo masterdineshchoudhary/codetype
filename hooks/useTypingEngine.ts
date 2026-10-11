@@ -59,6 +59,7 @@ export interface UseTypingEngineReturn {
   // Controls & Actions
   handleKeyDown: (e: React.KeyboardEvent | KeyboardEvent) => void;
   resetTest: (newText?: string) => void;
+  exitTyping: () => void;
   pauseTest: () => void;
   resumeTest: () => void;
 
@@ -69,6 +70,7 @@ export interface UseTypingEngineReturn {
     listener: (status: CharacterStatus, inputChar?: string) => void
   ) => () => void;
   subscribeCaret: (listener: (coords: CaretCoordinates) => void) => () => void;
+  subscribeActiveChar: (listener: (char: string) => void) => () => void;
   getCharStatus: (index: number) => CharacterStatus;
   getActiveIndex: () => number;
 
@@ -173,8 +175,11 @@ export function useTypingEngine({
     Map<number, Set<(status: CharacterStatus, inputChar?: string) => void>>
   >(new Map());
   const caretListenersRef = useRef<Set<(coords: CaretCoordinates) => void>>(new Set());
+  const activeCharListenersRef = useRef<Set<(char: string) => void>>(new Set());
 
-  // Animation frame id for caret update batching
+  const notifyActiveChar = useCallback((char: string) => {
+    activeCharListenersRef.current.forEach((listener) => listener(char));
+  }, []);
   const caretRafRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -219,7 +224,10 @@ export function useTypingEngine({
     charListenersMap.current.forEach((listeners) => {
       listeners.forEach((listener) => listener('pending', ''));
     });
-  }, []);
+
+    // Notify active char listeners with initial character
+    notifyActiveChar(targetStr[0] || '');
+  }, [notifyActiveChar]);
 
   /**
    * Fluid Caret Positioning Math (Law 1)
@@ -345,6 +353,20 @@ export function useTypingEngine({
       };
     },
     [caretCoords]
+  );
+
+  /**
+   * Subscribe to the next active character to guide keyboard maps with zero text-tree re-render
+   */
+  const subscribeActiveChar = useCallback(
+    (listener: (char: string) => void) => {
+      activeCharListenersRef.current.add(listener);
+      listener(text[activeIndexRef.current] || '');
+      return () => {
+        activeCharListenersRef.current.delete(listener);
+      };
+    },
+    [text]
   );
 
   /**
@@ -546,6 +568,13 @@ export function useTypingEngine({
         return;
       }
 
+      // 2. Handle Escape: exit typing mode / reset cleanly
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        resetTest();
+        return;
+      }
+
       // Ignore modifier combinations (except Backspace deletions)
       if (e.ctrlKey || e.metaKey || e.altKey) {
         if (e.key === 'Backspace') {
@@ -562,7 +591,6 @@ export function useTypingEngine({
         e.key === 'Alt' ||
         e.key === 'Meta' ||
         e.key === 'CapsLock' ||
-        e.key === 'Escape' ||
         e.key === 'ArrowLeft' ||
         e.key === 'ArrowRight' ||
         e.key === 'ArrowUp' ||
@@ -664,6 +692,7 @@ export function useTypingEngine({
       if (prevEl) prevEl.classList.remove('char-active');
 
       activeIndexRef.current = currentIdx + 1;
+      notifyActiveChar(text[currentIdx + 1] || '');
 
       const nextEl = charElementsMap.current.get(currentIdx + 1);
       if (nextEl) nextEl.classList.add('char-active');
@@ -678,6 +707,7 @@ export function useTypingEngine({
     },
     [
       finishTest,
+      notifyActiveChar,
       onKeystroke,
       resetTest,
       startTimerTicker,
@@ -715,6 +745,7 @@ export function useTypingEngine({
     updateCharacterAt(targetIdx, 'pending', '');
 
     activeIndexRef.current = targetIdx;
+    notifyActiveChar(text[targetIdx] || '');
 
     const targetEl = charElementsMap.current.get(targetIdx);
     if (targetEl) targetEl.classList.add('char-active');
@@ -757,12 +788,13 @@ export function useTypingEngine({
     soundSynthRef.current.playKeySound('backspace');
 
     activeIndexRef.current = targetIdx;
+    notifyActiveChar(text[targetIdx] || '');
 
     const targetEl = charElementsMap.current.get(targetIdx);
     if (targetEl) targetEl.classList.add('char-active');
 
     updateCaretPosition();
-  }, [text, updateCaretPosition, updateCharacterAt]);
+  }, [notifyActiveChar, text, updateCaretPosition, updateCharacterAt]);
 
   const pauseTest = useCallback(() => {
     if (statusRef.current === 'running') {
@@ -816,11 +848,13 @@ export function useTypingEngine({
     caretRef,
     handleKeyDown,
     resetTest,
+    exitTyping: resetTest,
     pauseTest,
     resumeTest,
     registerCharElement,
     subscribeChar,
     subscribeCaret,
+    subscribeActiveChar,
     getCharStatus,
     getActiveIndex,
     result,
