@@ -1,0 +1,18 @@
+{
+  "name": "CodeType | Developer Typing Benchmark",
+  "short_name": "CodeType",
+  "description": "Minimal, high-performance developer-centric typing platform with adaptive Keybr weak-key learning and low-latency audio synthesis.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0e0f12",
+  "theme_color": "#0e0f12",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
