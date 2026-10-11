@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0e0f12;
+  --surface: #14161b;
+  --surface-hover: #1d2027;
+  --border-subtle: #252831;
+  --text-dim: #646669;
+  --text-bright: #d1d0c5;
+  --caret-color: #e2b714;
+  --accent: #e2b714;
+  --error-color: #ca4754;
+  --error-extra: #7e2a33;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-bright);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Character styling */
+.char-span {
+  position: relative;
+  transition: color 40ms ease;
+}
+
+.char-span[data-status="pending"] {
+  color: var(--text-dim);
+}
+
+.char-span[data-status="correct"] {
+  color: var(--text-bright);
+}
+
+.char-span[data-status="incorrect"] {
+  color: var(--error-color);
+  background-color: rgba(202, 71, 84, 0.15);
+  border-radius: 2px;
+}
+
+.char-span[data-status="corrected"] {
+  color: #9b9a8f;
+}
+
+/* Caret blinking keyframe */
+@keyframes caret-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-caret-blink {
+  animation: caret-blink 1s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
