@@ -93,3 +93,4 @@
 - Modify: `app/page.tsx`
 - Modify: `components/controls/ModeToggle.tsx`
 - Test: `npm test` & `npx next build`
+

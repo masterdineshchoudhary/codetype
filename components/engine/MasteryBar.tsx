@@ -95,3 +95,4 @@ export function MasteryBar({ masteryState }: MasteryBarProps) {
     </div>
   );
 }
+
