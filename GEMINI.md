@@ -218,15 +218,18 @@ codetype/
 
 ---
 
-### Phase 6: Post-Test Rhythm & Consistency Charting ⏳ NEXT
-
-- [ ] **SVG Consistency Chart (`components/results/ConsistencyChart.tsx`):**
+### Phase 6: Post-Test Rhythm & Consistency Charting ✅ COMPLETED
+- [x] **SVG Consistency Chart (`components/results/ConsistencyChart.tsx`):**
   - Zero-dependency SVG timeline rendering live WPM and Raw WPM curves over test duration.
-  - Point indicators for error moments and burst periods.
-- [ ] **Flight-Time Latency Histogram:**
-  - Chart showing user key-to-key latency distribution (inter-keystroke interval in milliseconds).
+  - Point indicators for error moments and burst periods with hover inspector.
+- [x] **Flight-Time Latency Histogram (`components/results/LatencyHistogram.tsx`):**
+  - Chart showing user key-to-key latency distribution (inter-keystroke interval in milliseconds) with median, average, and p95 statistics.
+- [x] **Tabbed Results Modal Integration:**
+  - Integrated Rhythm Consistency Curve, Weak-Key Heatmap, and Flight Latency into [ResultsModal.tsx](file:///Users/dineshchoudhary/Developer/personal/codetype/components/results/ResultsModal.tsx).
 
-### Phase 7: Production Hardening, Audio Buffering & PWA ⏳ FINAL
+---
+
+### Phase 7: Production Hardening, Audio Buffering & PWA ⏳ NEXT
 - [ ] Offline PWA support with service worker manifest.
 - [ ] Web Audio background suspension handling across all mobile and desktop browsers.
 - [ ] Comprehensive performance profiling ensuring 0 dropped frames at 160+ WPM.
