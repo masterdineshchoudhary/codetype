@@ -147,3 +147,104 @@ export function generateSmoothSvgPath(points: Point[]): string {
 
   return path;
 }
+
+export interface LatencyBucket {
+  label: string;
+  minMs: number;
+  maxMs: number;
+  count: number;
+  percentage: number;
+}
+
+export interface LatencyDistributionResult {
+  buckets: LatencyBucket[];
+  totalKeystrokes: number;
+  medianMs: number;
+  p95Ms: number;
+  avgMs: number;
+  maxCount: number;
+}
+
+/**
+ * Categorizes keystroke flight times into distribution histogram buckets
+ * and computes statistical latency percentiles.
+ */
+export function computeLatencyDistribution(
+  keystrokes: KeystrokeRecord[]
+): LatencyDistributionResult {
+  // Exclude initial keystroke with flightTimeMs === 0
+  const validStrokes = (keystrokes || []).filter((ks, idx) => idx > 0 && ks.flightTimeMs > 0);
+
+  const bucketDefinitions: { label: string; minMs: number; maxMs: number }[] = [
+    { label: '< 60ms', minMs: 0, maxMs: 60 },
+    { label: '60-100ms', minMs: 60, maxMs: 100 },
+    { label: '100-140ms', minMs: 100, maxMs: 140 },
+    { label: '140-180ms', minMs: 140, maxMs: 180 },
+    { label: '180-240ms', minMs: 180, maxMs: 240 },
+    { label: '240-320ms', minMs: 240, maxMs: 320 },
+    { label: '> 320ms', minMs: 320, maxMs: Infinity },
+  ];
+
+  if (validStrokes.length === 0) {
+    return {
+      buckets: bucketDefinitions.map((b) => ({ ...b, count: 0, percentage: 0 })),
+      totalKeystrokes: 0,
+      medianMs: 0,
+      p95Ms: 0,
+      avgMs: 0,
+      maxCount: 0,
+    };
+  }
+
+  const counts = new Array(bucketDefinitions.length).fill(0);
+  const flightTimes = validStrokes.map((s) => s.flightTimeMs).sort((a, b) => a - b);
+
+  let totalMs = 0;
+  for (const ft of flightTimes) {
+    totalMs += ft;
+    let placed = false;
+    for (let i = 0; i < bucketDefinitions.length; i++) {
+      const b = bucketDefinitions[i];
+      if (ft >= b.minMs && ft < b.maxMs) {
+        counts[i]++;
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      counts[counts.length - 1]++;
+    }
+  }
+
+  const total = flightTimes.length;
+  const maxCount = Math.max(...counts, 1);
+
+  const buckets: LatencyBucket[] = bucketDefinitions.map((b, idx) => ({
+    ...b,
+    count: counts[idx],
+    percentage: Math.round((counts[idx] / total) * 100),
+  }));
+
+  // Median Calculation
+  const mid = Math.floor(total / 2);
+  const medianMs =
+    total % 2 !== 0
+      ? flightTimes[mid]
+      : Math.round((flightTimes[mid - 1] + flightTimes[mid]) / 2);
+
+  // 95th Percentile Calculation
+  const p95Idx = Math.min(Math.floor(total * 0.95), total - 1);
+  const p95Ms = flightTimes[p95Idx];
+
+  const avgMs = Math.round(totalMs / total);
+
+  return {
+    buckets,
+    totalKeystrokes: total,
+    medianMs,
+    p95Ms,
+    avgMs,
+    maxCount,
+  };
+}
+

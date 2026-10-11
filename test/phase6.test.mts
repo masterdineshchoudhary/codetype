@@ -47,5 +47,36 @@ const emptyBounds = computeTimelineBounds([]);
 assert.strictEqual(emptyBounds.duration, 1);
 assert.strictEqual(generateSvgPath([]), '');
 
-console.log('  ✓ Timeline bounds, point projection, and SVG path math verified.\n');
 console.log('🎉 Task 1 verification passed!\n');
+
+// ============================================================
+// Test 2: Flight-Time Latency Distribution
+// ============================================================
+console.log('Test 2: Flight-Time Latency Distribution');
+
+import { computeLatencyDistribution } from '../lib/algorithms/chartMath.ts';
+
+const mockKeystrokes: KeystrokeRecord[] = [
+  { timestamp: 100, key: 'c', expected: 'c', index: 0, status: 'correct', flightTimeMs: 0 },
+  { timestamp: 180, key: 'o', expected: 'o', index: 1, status: 'correct', flightTimeMs: 80 },
+  { timestamp: 270, key: 'n', expected: 'n', index: 2, status: 'correct', flightTimeMs: 90 },
+  { timestamp: 390, key: 's', expected: 's', index: 3, status: 'correct', flightTimeMs: 120 },
+  { timestamp: 540, key: 't', expected: 't', index: 4, status: 'correct', flightTimeMs: 150 },
+  { timestamp: 800, key: 'x', expected: ' ', index: 5, status: 'incorrect', flightTimeMs: 260 },
+  { timestamp: 1300, key: ' ', expected: ' ', index: 6, status: 'correct', flightTimeMs: 500 },
+];
+
+const distribution = computeLatencyDistribution(mockKeystrokes);
+assert.ok(distribution.buckets.length >= 6, 'Must produce at least 6 latency bins');
+assert.strictEqual(distribution.totalKeystrokes, 6, 'Should analyze the 6 non-initial keystrokes');
+assert.ok(distribution.medianMs >= 100 && distribution.medianMs <= 160, `Median flight time should be ~135ms, got ${distribution.medianMs}`);
+assert.ok(distribution.p95Ms >= 260, `P95 latency should reflect the high latency strokes, got ${distribution.p95Ms}`);
+
+// Edge case: Empty keystrokes
+const emptyDist = computeLatencyDistribution([]);
+assert.strictEqual(emptyDist.totalKeystrokes, 0);
+assert.strictEqual(emptyDist.medianMs, 0);
+
+console.log('  ✓ Flight-time distribution buckets, median, and p95 calculations verified.\n');
+console.log('🎉 Task 2 verification passed!\n');
+
