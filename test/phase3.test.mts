@@ -14,7 +14,7 @@ console.log('🧪 Starting Phase 3 Test Suite...\n');
 {
   console.log('Test 1: Theme Definitions and Preset Registry');
 
-  const expectedThemes: ThemeId[] = ['monochrome', 'carbon', 'matrix', 'nord', 'cyberpunk'];
+  const expectedThemes: ThemeId[] = ['soft-black', 'soft-white', 'monochrome', 'terminal'];
 
   for (const id of expectedThemes) {
     const preset = THEME_PRESETS[id];
@@ -35,7 +35,7 @@ console.log('🧪 Starting Phase 3 Test Suite...\n');
     assert.ok(c.errorExtra, `Theme ${id} missing errorExtra`);
   }
 
-  console.log('  ✓ All 5 theme presets verified with complete CSS token palettes.');
+  console.log('  ✓ All 4 minimal theme presets verified with complete CSS token palettes.');
 }
 
 // ============================================================================

@@ -34,7 +34,7 @@ for (const [themeId, preset] of Object.entries(THEME_PRESETS)) {
     );
   }
 }
-console.log('  ✓ All 5 theme presets contain complete syntax color tokens.\n');
+console.log('  ✓ All 4 minimal theme presets contain complete syntax color tokens.\n');
 
 console.log('🎉 Task 1 verification passed!\n');
 

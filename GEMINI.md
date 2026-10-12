@@ -90,11 +90,10 @@ CodeType is a minimal, high-performance, developer-centric typing platform that 
   - Caret styles (`line`, `block`, `underline`, `box`).
   - Theme switcher.
 - **Theme Presets (CSS Custom Properties):**
-  - **Monochrome Minimal (Default):** Deep black (`#0e0f12`), muted gray (`#646669`), crisp white (`#d1d0c5`), amber gold accent (`#e2b714`).
-  - **Carbon:** Cool charcoal background, cyan accent, icy white text.
-  - **Matrix:** Pitch black background, phosphor green text and caret.
-  - **Nord:** Arctic blue-gray background, snow white text, frost blue accent.
-  - **Cyberpunk:** Neon magenta/yellow contrast palette.
+  - **Soft Black:** Minimalist dark charcoal (`#121214`), subtle dark surfaces, clean silver text and caret.
+  - **Soft White:** Paper minimalist light (`#f7f7f8`), clean white surfaces, deep ink text and caret.
+  - **Monochrome (Default):** Deep black (`#0e0f12`), muted gray (`#646669`), crisp white (`#d1d0c5`), amber gold accent (`#e2b714`).
+  - **Terminal:** Phosphor green matrix terminal (`#0a0f0d`), phosphor green text (`#4ade80`), emerald green caret.
 
 ### Subsystem F: Post-Test Analytics & Heatmap Visualization
 - **Comprehensive Summary Modal:**
@@ -189,7 +188,7 @@ codetype/
   - Global hotkey listener for `Cmd + K` (Mac) / `Ctrl + K` (Windows) and `Tab + Enter`.
   - Fuzzy-searchable action items: Quick restart, mode change, switch audio profile, change language, change theme.
 - [x] **Multi-Theme Engine (`lib/themes/themeDefinitions.ts`):**
-  - Support 5 high-contrast themes: **Monochrome**, **Carbon**, **Matrix**, **Nord**, and **Cyberpunk**.
+  - Support 4 minimal themes: **Soft Black**, **Soft White**, **Monochrome**, and **Terminal**.
   - Dynamic CSS variable switching applied to document root with instant persistence.
 - [x] **Custom Caret Selector:**
   - Live configuration of caret style (`line`, `block`, `underline`, `box`) and smooth transition speeds.

@@ -1,7 +1,7 @@
 /**
  * CodeType ThemeSelector Component
- * Compact, accessible selector for the 5 curated high-contrast themes:
- * Monochrome Minimal, Carbon Gray, Matrix Terminal, Nordic Frost, and Cyberpunk Neon.
+ * Compact, accessible selector for the 4 curated minimal themes:
+ * Soft Black, Soft White, Monochrome, and Terminal.
  */
 
 'use client';
@@ -60,13 +60,13 @@ export function ThemeSelector({
         disabled={disabled}
         onClick={() => setIsOpen((prev) => !prev)}
         className="flex items-center gap-1.5 px-2.5 py-1 text-xs select-none bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border-subtle)] rounded-full text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors disabled:opacity-50 disabled:pointer-events-none"
-        title="Select Theme (5 curated presets)"
+        title="Select Theme (4 minimal presets)"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
         <Palette className="w-3.5 h-3.5 text-[var(--accent)]" />
         <span className="hidden sm:inline capitalize">
-          {activePreset.name.split(' ')[0]}
+          {activePreset.name}
         </span>
         {/* Accent Color Dot */}
         <span
@@ -84,7 +84,7 @@ export function ThemeSelector({
           <div className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-dim)] border-b border-[var(--border-subtle)]/60 mb-1 flex items-center justify-between">
             <span>Color Themes</span>
             <span className="text-[9px] px-1 py-0.2 rounded bg-[var(--bg)] border border-[var(--border-subtle)]">
-              5 Presets
+              4 Presets
             </span>
           </div>
 
@@ -135,3 +135,4 @@ export function ThemeSelector({
     </div>
   );
 }
+

@@ -58,7 +58,7 @@ export type SyntaxTokenType =
   | 'type'
   | 'default';
 
-export type ThemeId = 'monochrome' | 'carbon' | 'matrix' | 'nord' | 'cyberpunk';
+export type ThemeId = 'soft-black' | 'soft-white' | 'monochrome' | 'terminal';
 
 export interface ThemeColors {
   bg: string;

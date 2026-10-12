@@ -1,6 +1,6 @@
 /**
  * Test Suite: CodeType UX Enhancements
- * 1. 5 Curated Themes Preset Integrity & Switching
+ * 1. 4 Curated Minimal Themes Preset Integrity & Switching
  * 2. Escape Keystroke / Exit Typing Handler
  * 3. Zero-Rerender Active Character Notification & Keyboard Map Alignment
  */
@@ -12,14 +12,14 @@ import type { ThemeId } from '../types/typing.ts';
 console.log('🧪 Starting CodeType UX Enhancements Test Suite...\n');
 
 // ============================================================
-// Test 1: Exactly 5 Curated Themes
+// Test 1: Exactly 4 Curated Minimal Themes
 // ============================================================
-console.log('Test 1: Verification of Exactly 5 Curated Themes');
+console.log('Test 1: Verification of Exactly 4 Curated Minimal Themes');
 
 const themeKeys = Object.keys(THEME_PRESETS);
-assert.strictEqual(themeKeys.length, 5, 'Must have exactly 5 themes');
+assert.strictEqual(themeKeys.length, 4, 'Must have exactly 4 themes');
 
-const expectedThemes: ThemeId[] = ['monochrome', 'carbon', 'matrix', 'nord', 'cyberpunk'];
+const expectedThemes: ThemeId[] = ['soft-black', 'soft-white', 'monochrome', 'terminal'];
 expectedThemes.forEach((id) => {
   assert.ok(THEME_PRESETS[id], `Theme "${id}" must exist in THEME_PRESETS`);
   const preset = THEME_PRESETS[id];
@@ -28,15 +28,15 @@ expectedThemes.forEach((id) => {
   assert.ok(preset.colors.syntaxKeyword, `Theme "${id}" must have syntaxKeyword color`);
 });
 
-// Test cyclic switching through the 5 themes
-let current: ThemeId = 'monochrome';
-for (let i = 0; i < 5; i++) {
+// Test cyclic switching through the 4 themes
+let current: ThemeId = 'soft-black';
+for (let i = 0; i < 4; i++) {
   const nextIdx = (expectedThemes.indexOf(current) + 1) % expectedThemes.length;
   current = expectedThemes[nextIdx];
 }
-assert.strictEqual(current, 'monochrome', 'Cycling 5 times must return to the initial theme');
+assert.strictEqual(current, 'soft-black', 'Cycling 4 times must return to the initial theme');
 
-console.log('  ✓ Verified exactly 5 curated themes with complete color tokens.\n');
+console.log('  ✓ Verified exactly 4 curated minimal themes with complete color tokens.\n');
 
 // ============================================================
 // Test 2: Active Next Key Alignment for Keyboard Map
@@ -78,3 +78,4 @@ assert.ok(!unlockedSet.has('z'), 'Key "z" must be locked');
 console.log('  ✓ Keybr sequential lock filter verified.\n');
 
 console.log('🎉 ALL UX ENHANCEMENT TESTS PASSED SUCCESSFULLY!\n');
+

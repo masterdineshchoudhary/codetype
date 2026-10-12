@@ -303,46 +303,38 @@ const DETERMINISTIC_INITIAL_TEXT =
         action: () => setConfig((prev) => ({ ...prev, zenMode: !prev.zenMode })),
       },
 
-      // Themes
+      // Themes (4 Minimal Presets)
+      {
+        id: 'theme-soft-black',
+        title: 'Theme: Soft Black',
+        subtitle: 'Minimalist deep charcoal & clean silver',
+        category: 'theme',
+        keywords: ['soft', 'black', 'dark', 'charcoal', 'minimal'],
+        action: () => handleSetTheme('soft-black'),
+      },
+      {
+        id: 'theme-soft-white',
+        title: 'Theme: Soft White',
+        subtitle: 'Paper minimalist light & deep ink',
+        category: 'theme',
+        keywords: ['soft', 'white', 'light', 'clean', 'paper'],
+        action: () => handleSetTheme('soft-white'),
+      },
       {
         id: 'theme-monochrome',
-        title: 'Theme: Monochrome Minimal',
-        subtitle: 'High-contrast charcoal & amber gold',
+        title: 'Theme: Monochrome',
+        subtitle: 'Pure dark background & amber gold accent',
         category: 'theme',
-        keywords: ['dark', 'black', 'gold', 'yellow'],
+        keywords: ['monochrome', 'dark', 'black', 'gold', 'yellow'],
         action: () => handleSetTheme('monochrome'),
       },
       {
-        id: 'theme-carbon',
-        title: 'Theme: Carbon Gray',
-        subtitle: 'Cool charcoal & IBM cyan',
+        id: 'theme-terminal',
+        title: 'Theme: Terminal',
+        subtitle: 'Phosphor green matrix terminal',
         category: 'theme',
-        keywords: ['carbon', 'blue', 'cyan'],
-        action: () => handleSetTheme('carbon'),
-      },
-      {
-        id: 'theme-matrix',
-        title: 'Theme: Matrix Terminal',
-        subtitle: 'Pitch black & phosphor green',
-        category: 'theme',
-        keywords: ['matrix', 'green', 'hacker', 'terminal'],
-        action: () => handleSetTheme('matrix'),
-      },
-      {
-        id: 'theme-nord',
-        title: 'Theme: Nordic Frost',
-        subtitle: 'Arctic night & frost blue',
-        category: 'theme',
-        keywords: ['nord', 'arctic', 'snow', 'frost'],
-        action: () => handleSetTheme('nord'),
-      },
-      {
-        id: 'theme-cyberpunk',
-        title: 'Theme: Cyberpunk Neon',
-        subtitle: 'Electric purple, yellow & neon cyan',
-        category: 'theme',
-        keywords: ['cyberpunk', 'neon', 'purple', 'yellow'],
-        action: () => handleSetTheme('cyberpunk'),
+        keywords: ['terminal', 'matrix', 'green', 'hacker'],
+        action: () => handleSetTheme('terminal'),
       },
 
       // Caret Styles
@@ -858,17 +850,16 @@ const DETERMINISTIC_INITIAL_TEXT =
             type="button"
             onClick={() => {
               const themeList: ThemeId[] = [
+                'soft-black',
+                'soft-white',
                 'monochrome',
-                'carbon',
-                'matrix',
-                'nord',
-                'cyberpunk',
+                'terminal',
               ];
               const nextIdx = (themeList.indexOf(config.theme) + 1) % themeList.length;
               handleSetTheme(themeList[nextIdx]);
             }}
             className="flex items-center gap-1 text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors cursor-pointer"
-            title="Click to cycle theme (5 curated presets)"
+            title="Click to cycle theme (4 minimal presets)"
           >
             <Palette className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span className="capitalize">{THEME_PRESETS[config.theme]?.name || config.theme}</span>
