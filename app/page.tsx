@@ -12,11 +12,9 @@ import { useAdaptiveLearning } from '../hooks/useAdaptiveLearning';
 import { useKeybrMastery } from '../hooks/useKeybrMastery';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 import { useCommandPalette } from '../hooks/useCommandPalette';
-import { ModeToggle } from '../components/controls/ModeToggle';
-import { SoundSelector } from '../components/controls/SoundSelector';
-import { LanguageSelector } from '../components/controls/LanguageSelector';
 import { CommandPalette } from '../components/controls/CommandPalette';
 import { CustomSnippetModal } from '../components/controls/CustomSnippetModal';
+import { UnifiedDock } from '../components/controls/UnifiedDock';
 import { MetricsOverlay } from '../components/engine/MetricsOverlay';
 import { MasteryBar } from '../components/engine/MasteryBar';
 import { TypingArea } from '../components/engine/TypingArea';
@@ -28,7 +26,6 @@ import {
   storeTheme,
   THEME_PRESETS,
 } from '../lib/themes/themeDefinitions';
-import { ThemeSelector } from '../components/controls/ThemeSelector';
 import { KeyboardMap } from '../components/engine/KeyboardMap';
 import type { CommandItem } from '../lib/commands/commandRegistry';
 import type {
@@ -40,7 +37,6 @@ import type {
   TestResult,
   ThemeId,
 } from '../types/typing';
-import { Command, FileCode, Keyboard, Palette, Sparkles, Terminal, X, Zap } from 'lucide-react';
 
 
 const INITIAL_CONFIG: EngineConfig = {
@@ -626,99 +622,28 @@ const DETERMINISTIC_INITIAL_TEXT =
         onApplySnippet={handleApplyCustomSnippet}
       />
 
-      {/* Header & Controls (Fades in Zen mode when typing) */}
+      {/* Top Floating Unified Dock (2027 Minimalist Island) */}
       <header
-        className={`flex flex-col items-center w-full gap-5 transition-opacity duration-300 ${
-          isZenActive ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        className={`w-full flex justify-center transition-all duration-500 ${
+          isZenActive ? 'opacity-0 -translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
         }`}
       >
-        <div className="flex items-center justify-between w-full max-w-4xl px-2">
-          {/* Logo & Version */}
-          <div className="flex items-center gap-2.5">
-            <Terminal className="w-5 h-5 text-[var(--accent)]" />
-            <span className="font-bold tracking-wider text-[var(--text-bright)] text-lg">
-              codetype
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--text-dim)] border border-[var(--border-subtle)]">
-              v0.3.0
-            </span>
-          </div>
-
-          {/* Right Header: Theme selector, Keymap toggle, Custom Snippet, Command Palette & Audio */}
-          <div className="flex items-center gap-2">
-            {/* Theme Selector (5 Curated Presets) */}
-            <ThemeSelector
-              currentTheme={config.theme}
-              onThemeChange={handleSetTheme}
-              disabled={status === 'running'}
-            />
-
-            {/* Keyboard Map Toggle Button */}
-            <button
-              type="button"
-              onClick={handleToggleKeyboardMap}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono select-none border rounded-full transition-colors ${
-                showKeyboardMap
-                  ? 'bg-[var(--surface-hover)] border-[var(--accent)] text-[var(--accent)] shadow-sm'
-                  : 'bg-[var(--surface)] border-[var(--border-subtle)] text-[var(--text-dim)] hover:text-[var(--text-bright)]'
-              }`}
-              title="Toggle Keyboard Map"
-            >
-              <Keyboard className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Keymap</span>
-            </button>
-
-            {/* Custom Snippet Modal Pill */}
-            <button
-              onClick={() => setIsCustomSnippetOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono select-none bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border-subtle)] rounded-full text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors"
-              title="Paste Custom Code or Upload File"
-            >
-              <FileCode className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <span className="hidden sm:inline">Custom</span>
-            </button>
-
-            {/* Command Palette Pill */}
-            <button
-              onClick={openPalette}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono select-none bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-[var(--border-subtle)] rounded-full text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors"
-              title="Command Palette (Cmd+K)"
-            >
-              <Command className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <span className="hidden sm:inline">Commands</span>
-              <kbd className="text-[10px] bg-[var(--bg)] px-1 py-0.2 rounded border border-[var(--border-subtle)]">
-                ⌘K
-              </kbd>
-            </button>
-
-            {/* Sound Profile Controls */}
-            <SoundSelector
-              profile={soundProfile}
-              volume={soundVolume}
-              isMuted={isMuted}
-              onProfileChange={setSoundProfile}
-              onVolumeChange={setSoundVolume}
-              onToggleMute={toggleMute}
-            />
-          </div>
-        </div>
-
-        {/* Mode Selector & Syntax Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <ModeToggle
-            config={config}
-            onChange={handleConfigChange}
-            disabled={status === 'running'}
-          />
-
-          {config.mode === 'syntax' && (
-            <LanguageSelector
-              language={config.syntaxOptions.language}
-              onLanguageChange={handleLanguageChange}
-              disabled={status === 'running'}
-            />
-          )}
-        </div>
+        <UnifiedDock
+          config={config}
+          status={status}
+          onConfigChange={handleConfigChange}
+          onThemeChange={handleSetTheme}
+          soundProfile={soundProfile}
+          soundVolume={soundVolume}
+          isMuted={isMuted}
+          onSoundProfileChange={setSoundProfile}
+          onSoundVolumeChange={setSoundVolume}
+          onToggleMute={toggleMute}
+          showKeyboardMap={showKeyboardMap}
+          onToggleKeyboardMap={handleToggleKeyboardMap}
+          onOpenCustomSnippet={() => setIsCustomSnippetOpen(true)}
+          onOpenCommandPalette={openPalette}
+        />
       </header>
 
       {/* Main Arena */}
@@ -729,24 +654,23 @@ const DETERMINISTIC_INITIAL_TEXT =
         ) : (
           /* Live Typing Arena */
           <div className="flex flex-col items-center w-full max-w-4xl">
-            {/* New Key Unlocked Notification Banner */}
+            {/* Tier Unlocked Toast Chip */}
             {unlockedKeyBanner && (
-              <div className="flex items-center justify-between w-full px-4 py-2.5 mb-4 bg-amber-950/60 border border-amber-500/80 rounded-xl text-amber-200 text-xs font-mono shadow-md animate-bounce">
+              <div className="flex items-center justify-between w-full max-w-sm px-4 py-2 mb-4 glass-card rounded-full text-xs font-mono shadow-xl animate-fade-in">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span>
-                    🎉 Mastered current tier! Unlocked new letter:{' '}
-                    <strong className="uppercase text-amber-300 text-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+                  <span className="text-[var(--text-bright)]">
+                    Unlocked tier letter{' '}
+                    <strong className="uppercase text-[var(--accent)] font-bold">
                       &apos;{unlockedKeyBanner}&apos;
                     </strong>
-                    !
                   </span>
                 </div>
                 <button
                   onClick={() => setUnlockedKeyBanner(null)}
-                  className="px-2 py-0.5 rounded bg-amber-900/50 hover:bg-amber-900 text-[10px] text-amber-300 border border-amber-700/60 transition-colors"
+                  className="text-[10px] text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors ml-3"
                 >
-                  Dismiss
+                  ✕
                 </button>
               </div>
             )}
@@ -756,21 +680,17 @@ const DETERMINISTIC_INITIAL_TEXT =
               <MasteryBar masteryState={masteryState} />
             )}
 
-            {/* Active Sprint Exit Button */}
+            {/* Active Sprint Floating Exit Capsule */}
             {status === 'running' && (
-              <div className="flex items-center justify-between w-full max-w-4xl mb-3 px-1 animate-fade-in">
-                <span className="text-xs text-[var(--text-dim)] font-mono flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Typing sprint active
-                </span>
+              <div className="flex items-center justify-end w-full max-w-4xl mb-2 px-1 animate-fade-in">
                 <button
                   type="button"
                   onClick={exitTyping}
-                  className="flex items-center gap-1.5 px-3 py-1 text-xs font-mono rounded-full bg-[var(--surface)] hover:bg-[var(--surface-hover)] border border-red-500/50 hover:border-red-500 text-red-400 hover:text-red-300 transition-colors shadow-sm"
-                  title="Exit typing mode (or press Esc)"
+                  className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono rounded-full glass-card hover:bg-red-950/20 text-[var(--text-dim)] hover:text-red-400 transition-colors shadow-sm"
+                  title="Exit typing mode (Esc)"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  <span>Exit Typing (Esc)</span>
+                  <kbd className="px-1 py-0.2 rounded bg-[var(--bg)] border border-[var(--border-subtle)]/40 text-[9px]">Esc</kbd>
+                  <span>exit</span>
                 </button>
               </div>
             )}
@@ -812,36 +732,30 @@ const DETERMINISTIC_INITIAL_TEXT =
         )}
       </section>
 
-      {/* Footer Hints (Fades in Zen mode when typing) */}
+      {/* Modern Minimal Footer */}
       <footer
-        className={`flex items-center justify-between w-full max-w-4xl pt-6 text-xs text-[var(--text-dim)] border-t border-[var(--border-subtle)] transition-opacity duration-300 ${
+        className={`flex items-center justify-between w-full max-w-4xl pt-8 pb-2 text-xs text-[var(--text-dim)]/70 transition-opacity duration-300 ${
           isZenActive ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-red-400/90">
-            <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface)] border border-red-500/40 text-[10px]">
-              Esc
-            </kbd>{' '}
-            exit typing
-          </span>
           <span className="flex items-center gap-1.5">
-            <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface)] border border-[var(--border-subtle)] text-[10px]">
+            <kbd className="px-1.5 py-0.5 rounded-md bg-[var(--surface-hover)]/40 border border-[var(--border-subtle)]/40 text-[10px]">
               Tab
             </kbd>{' '}
-            restart test
+            restart
           </span>
           <span className="flex items-center gap-1.5">
-            <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface)] border border-[var(--border-subtle)] text-[10px]">
-              Cmd+K
+            <kbd className="px-1.5 py-0.5 rounded-md bg-[var(--surface-hover)]/40 border border-[var(--border-subtle)]/40 text-[10px]">
+              ⌘K
             </kbd>{' '}
-            command palette
+            commands
           </span>
-          <span className="flex items-center gap-1.5 hidden sm:flex">
-            <kbd className="px-1.5 py-0.5 rounded bg-[var(--surface)] border border-[var(--border-subtle)] text-[10px]">
-              Ctrl+Backspace
+          <span className="flex items-center gap-1.5 text-red-400/70">
+            <kbd className="px-1.5 py-0.5 rounded-md bg-[var(--surface-hover)]/40 border border-red-500/20 text-[10px]">
+              Esc
             </kbd>{' '}
-            delete word
+            exit
           </span>
         </div>
 
@@ -858,16 +772,18 @@ const DETERMINISTIC_INITIAL_TEXT =
               const nextIdx = (themeList.indexOf(config.theme) + 1) % themeList.length;
               handleSetTheme(themeList[nextIdx]);
             }}
-            className="flex items-center gap-1 text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors cursor-pointer"
             title="Click to cycle theme (4 minimal presets)"
           >
-            <Palette className="w-3.5 h-3.5 text-[var(--accent)]" />
+            <span
+              className="w-2 h-2 rounded-full border border-black/30 shadow-sm"
+              style={{ backgroundColor: THEME_PRESETS[config.theme]?.colors.accent }}
+            />
             <span className="capitalize">{THEME_PRESETS[config.theme]?.name || config.theme}</span>
           </button>
-          <span className="text-[var(--border-subtle)]">|</span>
-          <span className="flex items-center gap-1 text-[var(--accent)]">
-            <Zap className="w-3.5 h-3.5" />
-            <span>zero-lag synth</span>
+          <span className="text-[var(--border-subtle)]/50">·</span>
+          <span className="text-[var(--text-dim)]/60">
+            zero-lag engine
           </span>
         </div>
       </footer>

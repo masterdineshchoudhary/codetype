@@ -30,41 +30,41 @@ export function MetricsOverlay({
   }
 
   return (
-    <div className="flex items-center justify-between w-full max-w-4xl px-2 py-3 mb-6 select-none font-mono text-sm border-b border-[var(--border-subtle)]">
-      <div className="flex items-center gap-8">
+    <div className="flex items-center justify-between w-full max-w-4xl px-1 py-2 mb-4 select-none font-mono text-xs transition-opacity duration-300">
+      <div className="flex items-center gap-6 sm:gap-8">
         {/* WPM Counter */}
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">WPM</span>
-          <span className="text-2xl font-bold text-[var(--text-bright)] tabular-nums">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xl sm:text-2xl font-bold text-[var(--text-bright)] tabular-nums">
             {isRunning || status === 'completed' ? Math.round(metrics.wpm) : 0}
           </span>
+          <span className="text-[10px] tracking-wider text-[var(--text-dim)] uppercase">wpm</span>
         </div>
 
         {/* Raw WPM */}
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">RAW</span>
-          <span className="text-xl font-medium text-[var(--text-dim)] tabular-nums">
+        <div className="flex items-baseline gap-1.5 hidden sm:flex">
+          <span className="text-lg font-medium text-[var(--text-dim)] tabular-nums">
             {isRunning || status === 'completed' ? Math.round(metrics.rawWpm) : 0}
           </span>
+          <span className="text-[10px] tracking-wider text-[var(--text-dim)]/70 uppercase">raw</span>
         </div>
 
         {/* Accuracy */}
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">ACC</span>
-          <span className="text-2xl font-bold text-[var(--text-bright)] tabular-nums">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xl sm:text-2xl font-bold text-[var(--text-bright)] tabular-nums">
             {metrics.accuracy}%
           </span>
+          <span className="text-[10px] tracking-wider text-[var(--text-dim)] uppercase">acc</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4">
         {/* Timer / Progress */}
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">
-            {timeRemaining !== null ? 'REMAINING' : 'TIME'}
-          </span>
-          <span className="text-2xl font-bold text-[var(--accent)] tabular-nums">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-xl sm:text-2xl font-bold text-[var(--accent)] tabular-nums">
             {timeRemaining !== null ? `${timeRemaining}s` : `${Math.floor(elapsedTime)}s`}
+          </span>
+          <span className="text-[10px] tracking-wider text-[var(--text-dim)] uppercase">
+            {timeRemaining !== null ? 'rem' : 'time'}
           </span>
         </div>
       </div>

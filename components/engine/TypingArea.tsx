@@ -115,11 +115,12 @@ export function TypingArea({
         onBlur={() => setIsFocused(false)}
       />
 
-      {/* Focus Warning Overlay */}
+      {/* Focus Indicator Overlay (Subtle 2027 Ambient Vignette) */}
       {!isFocused && status !== 'completed' && !isPaletteOpen && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/75 backdrop-blur-[2px] z-30 transition-opacity">
-          <div className="px-4 py-2 border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--text-bright)] text-sm font-mono rounded shadow-lg animate-pulse">
-            Click or press any key to focus
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/35 backdrop-blur-[2px] z-30 transition-all duration-300">
+          <div className="flex items-center gap-2 px-4 py-1.5 glass-card text-[var(--text-bright)] text-xs font-mono rounded-full shadow-2xl">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-ping" />
+            <span>Click to focus</span>
           </div>
         </div>
       )}
@@ -127,8 +128,8 @@ export function TypingArea({
       {/* 3-Line Text Viewport Container */}
       <div
         ref={containerRef}
-        className="relative overflow-hidden max-h-[140px] text-2xl font-mono leading-relaxed tracking-wide transition-all"
-        style={{ minHeight: '140px' }}
+        className="relative overflow-hidden max-h-[150px] text-2xl sm:text-3xl font-mono leading-relaxed text-arena transition-all"
+        style={{ minHeight: '150px' }}
       >
         {/* Dynamic Smooth Caret */}
         <Caret

@@ -211,35 +211,35 @@ export function KeyboardMap({
 
   return (
     <div
-      className={`flex flex-col items-center gap-1.5 p-3.5 bg-[var(--surface)]/90 backdrop-blur-sm border border-[var(--border-subtle)] rounded-xl font-mono select-none shadow-xl transition-all ${className}`}
+      className={`flex flex-col items-center gap-2 p-4 glass-card rounded-2xl font-mono select-none shadow-2xl transition-all duration-300 ${className}`}
     >
       {/* Header bar / Legend */}
-      <div className="flex items-center justify-between w-full max-w-2xl px-1 text-[11px] text-[var(--text-dim)]">
+      <div className="flex items-center justify-between w-full max-w-2xl px-1 text-[10px] text-[var(--text-dim)] tracking-wider">
         <div className="flex items-center gap-2">
-          <span className="font-semibold tracking-wider text-[var(--text-bright)]">
-            KEYBOARD MAP
+          <span className="font-semibold text-[var(--text-bright)] opacity-90 uppercase">
+            Keyboard Map
           </span>
           {isKeybrMode && (
-            <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950/60 border border-amber-600/50 text-amber-300">
-              Keybr Progression
+            <span className="px-1.5 py-0.5 rounded-full bg-amber-950/40 border border-amber-600/30 text-amber-300 text-[9px]">
+              Keybr Mode
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-3 text-[10px]">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" />
-            Next Key
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]" />
+            Next
           </span>
           {isKeybrMode && (
-            <span className="flex items-center gap-1 text-[var(--text-dim)] opacity-60">
-              <span className="w-2 h-2 rounded bg-zinc-700/50" />
+            <span className="flex items-center gap-1 text-[var(--text-dim)] opacity-50">
+              <span className="w-1.5 h-1.5 rounded-sm bg-zinc-700/50" />
               Locked
             </span>
           )}
           {heatmap && (
             <span className="flex items-center gap-1 text-red-400">
-              <span className="w-2 h-2 rounded bg-red-900 border border-red-500" />
+              <span className="w-1.5 h-1.5 rounded-sm bg-red-800" />
               Weak
             </span>
           )}
@@ -247,7 +247,7 @@ export function KeyboardMap({
       </div>
 
       {/* Keyboard Matrix */}
-      <div className="flex flex-col gap-1 w-full max-w-2xl">
+      <div className="flex flex-col gap-1 w-full max-w-2xl pt-1">
         {KEYBOARD_LAYOUT.map((row, rIdx) => (
           <div key={rIdx} className="flex justify-center gap-1 w-full">
             {row.map((kDef, kIdx) => {
@@ -265,21 +265,21 @@ export function KeyboardMap({
               return (
                 <div
                   key={`${rIdx}-${kIdx}`}
-                  className={`relative h-8 sm:h-9 flex flex-col items-center justify-center rounded-md border text-xs transition-all duration-75 ${widthClass} ${
+                  className={`relative h-8 sm:h-9 flex flex-col items-center justify-center rounded-lg border text-xs transition-all duration-100 ease-out ${widthClass} ${
                     pressed
-                      ? 'bg-[var(--accent)] text-black font-bold scale-[0.93] shadow-inner border-[var(--accent)]'
+                      ? 'bg-[var(--accent)] text-black font-extrabold scale-[0.92] shadow-inner border-[var(--accent)]'
                       : active
-                      ? 'bg-[var(--surface-hover)] text-[var(--text-bright)] border-[var(--accent)] shadow-[0_0_8px_var(--accent)] font-bold animate-pulse'
+                      ? 'bg-[var(--surface-hover)] text-[var(--text-bright)] border-[var(--accent)] ring-1 ring-[var(--accent)]/40 shadow-[0_0_12px_rgba(226,183,20,0.25)] font-bold'
                       : isLocked
-                      ? 'bg-[var(--bg)]/50 text-[var(--text-dim)] opacity-30 border-[var(--border-subtle)]'
+                      ? 'bg-[var(--bg)]/40 text-[var(--text-dim)] opacity-25 border-transparent'
                       : heatClass
                       ? `bg-[var(--surface)] ${heatClass}`
-                      : 'bg-[var(--surface)] text-[var(--text-dim)] hover:text-[var(--text-bright)] border-[var(--border-subtle)]'
+                      : 'bg-[var(--surface)]/70 text-[var(--text-dim)] hover:text-[var(--text-bright)] border-[var(--border-subtle)]/40 hover:border-[var(--border-subtle)]'
                   }`}
                 >
                   {/* Shifted symbol on top */}
                   {kDef.shiftKey && (
-                    <span className="text-[8px] sm:text-[9px] opacity-60 leading-none -mt-0.5">
+                    <span className="text-[8px] opacity-50 leading-none -mt-0.5">
                       {kDef.shiftKey}
                     </span>
                   )}

@@ -105,8 +105,8 @@ body {
 
 /* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -115,10 +115,35 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-subtle);
-  border-radius: 3px;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-dim);
+}
+
+/* 2027 Modern Design Utilities */
+.glass-dock {
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 80%, transparent);
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+}
+
+.ambient-accent-glow {
+  box-shadow: 0 0 20px -5px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.text-arena {
+  letter-spacing: -0.015em;
+  word-spacing: 0.15em;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 

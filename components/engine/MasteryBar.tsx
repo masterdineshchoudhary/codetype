@@ -42,33 +42,33 @@ export function MasteryBar({ masteryState }: MasteryBarProps) {
   const targetConf = Math.round((keyConfidences[currentKey] ?? 0) * 100);
 
   return (
-    <div className="flex flex-col w-full max-w-4xl p-3.5 mb-5 bg-[var(--surface)] border border-[var(--border-subtle)] rounded-xl font-mono text-xs select-none shadow-sm transition-all">
+    <div className="flex flex-col w-full max-w-4xl p-3 mb-4 glass-card rounded-2xl font-mono text-xs select-none shadow-lg transition-all">
       {/* Top Header: Target key & percentage */}
-      <div className="flex items-center justify-between w-full mb-2.5 px-1">
+      <div className="flex items-center justify-between w-full mb-2 px-1">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" />
-          <span className="text-[11px] font-semibold text-[var(--text-bright)]">
-            KEYBR PROGRESSION:
+          <Sparkles className="w-3 h-3 text-[var(--accent)]" />
+          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">
+            Progression:
           </span>
           <span className="text-[11px] text-[var(--text-dim)]">
-            Target Key{' '}
-            <span className="px-1.5 py-0.5 rounded bg-[var(--surface-hover)] border border-[var(--border-subtle)] text-[var(--accent)] font-bold uppercase">
+            Target{' '}
+            <span className="px-1.5 py-0.2 rounded-md bg-[var(--surface-hover)] border border-[var(--border-subtle)] text-[var(--accent)] font-bold uppercase">
               {currentKey}
             </span>{' '}
-            ({targetConf}% confidence)
+            ({targetConf}%)
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-[11px] text-[var(--text-dim)]">
-          <Award className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-dim)]">
+          <Award className="w-3 h-3 text-emerald-400" />
           <span>
-            {unlockedKeys.length} / {KEYBR_ALPHABET_SEQUENCE.length} keys ({overallMastery}%)
+            {unlockedKeys.length} / {KEYBR_ALPHABET_SEQUENCE.length} ({overallMastery}%)
           </span>
         </div>
       </div>
 
-      {/* Sequential Letter Grid */}
-      <div className="flex flex-wrap items-center gap-1.5 justify-start">
+      {/* Sequential Letter Track */}
+      <div className="flex flex-wrap items-center gap-1 justify-center sm:justify-start">
         {KEYBR_ALPHABET_SEQUENCE.map((char, idx) => {
           const isUnlocked = unlockedSet.has(char);
           const conf = Math.round((keyConfidences[char] ?? 0) * 100);
@@ -80,14 +80,11 @@ export function MasteryBar({ masteryState }: MasteryBarProps) {
                   ? `${char.toUpperCase()}: ${conf}% confidence`
                   : `Locked (Key #${idx + 1})`
               }
-              className={`w-6 h-7 flex items-center justify-center rounded border text-xs uppercase transition-all cursor-default relative ${getKeyBadgeStyle(
+              className={`w-6 h-6 flex items-center justify-center rounded-md border text-[11px] font-semibold uppercase transition-all cursor-default relative ${getKeyBadgeStyle(
                 char
               )}`}
             >
               <span>{char}</span>
-              {!isUnlocked && (
-                <Lock className="w-2 h-2 text-[var(--text-dim)] absolute bottom-0.5 right-0.5" />
-              )}
             </div>
           );
         })}
