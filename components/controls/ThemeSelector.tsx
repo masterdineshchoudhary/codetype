@@ -7,7 +7,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Palette, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { THEME_PRESETS } from '../../lib/themes/themeDefinitions';
 import type { ThemeId } from '../../types/typing';
 
@@ -64,15 +64,13 @@ export function ThemeSelector({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <Palette className="w-3.5 h-3.5 text-[var(--accent)]" />
+        <span
+          className="w-3.5 h-3.5 rounded-[3px] border border-[var(--border-subtle)] shadow-xs shrink-0"
+          style={{ backgroundColor: activePreset.colors.accent }}
+        />
         <span className="hidden sm:inline capitalize">
           {activePreset.name}
         </span>
-        {/* Accent Color Dot */}
-        <span
-          className="w-2.5 h-2.5 rounded-full border border-black/40 shadow-sm"
-          style={{ backgroundColor: activePreset.colors.accent }}
-        />
       </button>
 
       {/* Dropdown Menu */}
@@ -107,17 +105,11 @@ export function ThemeSelector({
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    {/* Swatch preview */}
-                    <div className="flex items-center -space-x-1">
-                      <span
-                        className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
-                        style={{ backgroundColor: t.colors.bg }}
-                      />
-                      <span
-                        className="w-3.5 h-3.5 rounded-full border border-black/30 shadow-sm"
-                        style={{ backgroundColor: t.colors.accent }}
-                      />
-                    </div>
+                    {/* Container box preview */}
+                    <span
+                      className="w-3.5 h-3.5 rounded-[3px] border border-[var(--border-subtle)] shadow-xs shrink-0"
+                      style={{ backgroundColor: t.colors.accent }}
+                    />
                     <div className="flex flex-col text-left">
                       <span className="text-xs">{t.name}</span>
                     </div>

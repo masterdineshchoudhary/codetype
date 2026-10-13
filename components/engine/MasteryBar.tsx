@@ -8,7 +8,7 @@
 import React from 'react';
 import type { KeybrMasteryState } from '../../types/typing';
 import { KEYBR_ALPHABET_SEQUENCE } from '../../lib/algorithms/masteryAlgorithm.ts';
-import { Award, Lock, Sparkles } from 'lucide-react';
+import { Award, Lock, Unlock } from 'lucide-react';
 
 export interface MasteryBarProps {
   masteryState: KeybrMasteryState;
@@ -46,9 +46,9 @@ export function MasteryBar({ masteryState }: MasteryBarProps) {
       {/* Top Header: Target key & percentage */}
       <div className="flex items-center justify-between w-full mb-2 px-1">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-3 h-3 text-[var(--accent)]" />
-          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">
-            Progression:
+          <Unlock className="w-3.5 h-3.5 text-[var(--accent)]" />
+          <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-semibold">
+            Letter Unlock:
           </span>
           <span className="text-[11px] text-[var(--text-dim)]">
             Target{' '}

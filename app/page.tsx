@@ -58,13 +58,14 @@ const INITIAL_CONFIG: EngineConfig = {
   caretStyle: 'line',
   smoothCaret: true,
   theme: 'monochrome',
-  zenMode: true,
+  zenMode: false,
   blindMode: false,
   strictBackspace: false,
 };
 
 export default function Home() {
   const [config, setConfig] = useState<EngineConfig>(INITIAL_CONFIG);
+  const [isCapsLockOn, setIsCapsLockOn] = useState<boolean>(false);
 
   // Initialize and apply saved theme
   useEffect(() => {
@@ -425,10 +426,10 @@ const DETERMINISTIC_INITIAL_TEXT =
       },
       {
         id: 'mode-keybr',
-        title: 'Mode: Keybr Progressive Mastery',
-        subtitle: 'Sequential letter unlocking & n-gram drills',
+        title: 'Mode: Unlock Letters',
+        subtitle: 'Sequential letter unlocking & progressive mastery',
         category: 'mode',
-        keywords: ['keybr', 'unlock', 'progression', 'mastery', 'alphabet'],
+        keywords: ['unlock', 'letters', 'progression', 'mastery', 'alphabet', 'keybr'],
         action: () =>
           handleConfigChange({
             mode: 'keybr',
@@ -436,10 +437,10 @@ const DETERMINISTIC_INITIAL_TEXT =
       },
       {
         id: 'action-reset-keybr',
-        title: 'Reset Keybr Mastery Progress',
+        title: 'Reset Letter Unlock Progress',
         subtitle: 'Re-lock letters back to initial 6 home keys',
         category: 'test',
-        keywords: ['reset', 'keybr', 'clear'],
+        keywords: ['reset', 'unlock', 'letters', 'clear', 'keybr'],
         action: () => {
           resetMastery();
           handleNextTest();
@@ -576,9 +577,13 @@ const DETERMINISTIC_INITIAL_TEXT =
     commands: paletteCommands,
   });
 
-  // Global Tab = quick restart; Global Escape = exit typing mode
+  // Global Tab = quick restart; Global Escape = exit typing mode; Caps Lock detection
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (typeof e.getModifierState === 'function') {
+        setIsCapsLockOn(e.getModifierState('CapsLock'));
+      }
+
       if (e.key === 'Tab' && !isPaletteOpen) {
         e.preventDefault();
         handleNextTest();
@@ -592,8 +597,19 @@ const DETERMINISTIC_INITIAL_TEXT =
         exitTyping();
       }
     };
+
+    const handleGlobalKeyUp = (e: KeyboardEvent) => {
+      if (typeof e.getModifierState === 'function') {
+        setIsCapsLockOn(e.getModifierState('CapsLock'));
+      }
+    };
+
     window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener('keyup', handleGlobalKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+      window.removeEventListener('keyup', handleGlobalKeyUp);
+    };
   }, [exitTyping, handleNextTest, isCustomSnippetOpen, isPaletteOpen, status]);
 
   const isZenActive =
@@ -680,20 +696,32 @@ const DETERMINISTIC_INITIAL_TEXT =
               <MasteryBar masteryState={masteryState} />
             )}
 
-            {/* Active Sprint Floating Exit Capsule */}
-            {status === 'running' && (
-              <div className="flex items-center justify-end w-full max-w-4xl mb-2 px-1 animate-fade-in">
-                <button
-                  type="button"
-                  onClick={exitTyping}
-                  className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono rounded-full glass-card hover:bg-red-950/20 text-[var(--text-dim)] hover:text-red-400 transition-colors shadow-sm"
-                  title="Exit typing mode (Esc)"
-                >
-                  <kbd className="px-1 py-0.2 rounded bg-[var(--bg)] border border-[var(--border-subtle)]/40 text-[9px]">Esc</kbd>
-                  <span>exit</span>
-                </button>
+            {/* Status & Warning Bar: Caps Lock Capsule & Exit Sprint Capsule */}
+            <div className="flex items-center justify-between w-full max-w-4xl min-h-[30px] mb-2 px-1">
+              <div>
+                {isCapsLockOn && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full glass-card border border-amber-500/40 text-amber-400 text-xs font-mono shadow-md animate-fade-in">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="text-[13px] leading-none font-bold">⇪</span>
+                    <span className="font-semibold tracking-wider text-[11px] uppercase">Caps Lock</span>
+                  </div>
+                )}
               </div>
-            )}
+
+              <div>
+                {status === 'running' && (
+                  <button
+                    type="button"
+                    onClick={exitTyping}
+                    className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono rounded-full glass-card hover:bg-red-950/20 text-[var(--text-dim)] hover:text-red-400 transition-colors shadow-sm"
+                    title="Exit typing mode (Esc)"
+                  >
+                    <kbd className="px-1 py-0.2 rounded bg-[var(--bg)] border border-[var(--border-subtle)]/40 text-[9px]">Esc</kbd>
+                    <span>exit</span>
+                  </button>
+                )}
+              </div>
+            </div>
 
             <MetricsOverlay
               metrics={metrics}
@@ -776,7 +804,7 @@ const DETERMINISTIC_INITIAL_TEXT =
             title="Click to cycle theme (4 minimal presets)"
           >
             <span
-              className="w-2 h-2 rounded-full border border-black/30 shadow-sm"
+              className="w-3.5 h-3.5 rounded-[3px] border border-[var(--border-subtle)] shadow-xs shrink-0"
               style={{ backgroundColor: THEME_PRESETS[config.theme]?.colors.accent }}
             />
             <span className="capitalize">{THEME_PRESETS[config.theme]?.name || config.theme}</span>

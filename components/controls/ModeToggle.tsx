@@ -12,7 +12,7 @@ import type {
   StandardWordCount,
   TestEngineMode,
 } from '../../types/typing';
-import { Code2, Hash, PenTool, Sparkles, Timer, Type } from 'lucide-react';
+import { Code2, Hash, PenTool, Timer, Type, Unlock } from 'lucide-react';
 
 export interface ModeToggleProps {
   config: EngineConfig;
@@ -115,9 +115,10 @@ export function ModeToggle({ config, onChange, disabled = false }: ModeTogglePro
               ? 'text-[var(--text-bright)] bg-[var(--surface-hover)] font-medium text-[var(--accent)]'
               : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
           }`}
+          title="Unlock Letters: Sequential progressive letter unlocking"
         >
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          Keybr
+          <Unlock className="w-3.5 h-3.5 text-[var(--accent)]" />
+          Unlock
         </button>
       </div>
 
@@ -245,11 +246,11 @@ export function ModeToggle({ config, onChange, disabled = false }: ModeTogglePro
         </div>
       )}
 
-      {/* Keybr Mastery Mode Options */}
+      {/* Letter Unlock Mastery Mode Options */}
       {isKeybr && (
         <div className="flex items-center gap-2 text-[var(--accent)] font-medium">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Sequential Key Progression</span>
+          <Unlock className="w-3.5 h-3.5" />
+          <span>Sequential Letter Unlock</span>
         </div>
       )}
     </div>

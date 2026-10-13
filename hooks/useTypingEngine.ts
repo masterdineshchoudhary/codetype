@@ -521,7 +521,6 @@ export function useTypingEngine({
         }
       }
 
-      // Snapshot for consistency curve
       const currentWpm = calculateStandardWpm(
         correctCharsRef.current,
         uncorrectedErrorsRef.current,
@@ -529,14 +528,18 @@ export function useTypingEngine({
       );
       const currentRawWpm = calculateRawWpm(totalKeystrokesRef.current, elapsedSec);
 
-      historyRef.current.push({
-        second: Math.round(elapsedSec),
-        wpm: currentWpm,
-        rawWpm: currentRawWpm,
-        errors: uncorrectedErrorsRef.current,
-      });
+      // Snapshot for consistency curve (one record per integer second)
+      const secondInt = Math.floor(elapsedSec);
+      if (secondInt > 0 && (historyRef.current.length === 0 || historyRef.current[historyRef.current.length - 1].second !== secondInt)) {
+        historyRef.current.push({
+          second: secondInt,
+          wpm: currentWpm,
+          rawWpm: currentRawWpm,
+          errors: uncorrectedErrorsRef.current,
+        });
+      }
 
-      // Throttled UI metrics update
+      // Live UI metrics update (smooth 250ms response)
       setMetrics((prev) => ({
         ...prev,
         wpm: currentWpm,
@@ -552,7 +555,7 @@ export function useTypingEngine({
         uncorrectedErrors: uncorrectedErrorsRef.current,
         elapsedTime: Math.round(elapsedSec * 10) / 10,
       }));
-    }, 500);
+    }, 250);
   }, [finishTest]);
 
   /**

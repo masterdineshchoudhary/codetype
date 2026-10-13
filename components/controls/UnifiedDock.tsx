@@ -17,18 +17,18 @@ import type {
 } from '../../types/typing';
 import { THEME_PRESETS } from '../../lib/themes/themeDefinitions';
 import {
+  Check,
+  ChevronDown,
   Code2,
   Command,
   FileCode,
   Hash,
   Keyboard,
   Palette,
-  Sparkles,
   Terminal,
+  Unlock,
   Volume2,
   VolumeX,
-  Check,
-  ChevronDown,
 } from 'lucide-react';
 
 export interface UnifiedDockProps {
@@ -170,16 +170,24 @@ export function UnifiedDock({
             type="button"
             disabled={isRunning}
             onClick={() => onConfigChange({ mode: 'keybr' })}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
               config.mode === 'keybr'
                 ? 'bg-[var(--surface)] text-[var(--accent)] shadow-sm font-semibold'
                 : 'text-[var(--text-dim)] hover:text-[var(--text-bright)]'
             }`}
+            title="Unlock Letters: Sequential progressive letter unlocking"
           >
-            <Sparkles className="w-3 h-3 text-[var(--accent)]" />
-            <span>Keybr</span>
+            <Unlock className="w-3 h-3 text-[var(--accent)]" />
+            <span>Unlock</span>
           </button>
         </div>
+
+        {/* Dynamic Contextual Options */}
+        {config.mode === 'keybr' && (
+          <div className="flex items-center gap-1.5 px-2 text-xs font-mono text-[var(--text-dim)]">
+            <span className="text-[11px] opacity-75">Letter progression</span>
+          </div>
+        )}
 
         {/* Dynamic Contextual Options */}
         {config.mode === 'standard' && config.standardOptions.type === 'words' && (
@@ -325,14 +333,14 @@ export function UnifiedDock({
             type="button"
             disabled={isRunning}
             onClick={() => setThemeOpen((prev) => !prev)}
-            className="flex items-center gap-1 p-1.5 rounded-lg hover:bg-[var(--surface-hover)] text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors"
+            className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-[var(--surface-hover)] text-[var(--text-dim)] hover:text-[var(--text-bright)] transition-colors"
             title={`Theme: ${activeTheme.name}`}
           >
-            <Palette className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span
-              className="w-2 h-2 rounded-full border border-black/30 shadow-sm"
+              className="w-3.5 h-3.5 rounded-[3px] border border-[var(--border-subtle)] shadow-xs shrink-0"
               style={{ backgroundColor: activeTheme.colors.accent }}
             />
+            <span className="text-[11px] font-mono hidden md:inline capitalize">{activeTheme.name}</span>
           </button>
 
           {themeOpen && (
@@ -357,16 +365,10 @@ export function UnifiedDock({
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center -space-x-1">
-                        <span
-                          className="w-3 h-3 rounded-full border border-white/20"
-                          style={{ backgroundColor: t.colors.bg }}
-                        />
-                        <span
-                          className="w-3 h-3 rounded-full border border-black/30"
-                          style={{ backgroundColor: t.colors.accent }}
-                        />
-                      </div>
+                      <span
+                        className="w-3.5 h-3.5 rounded-[3px] border border-[var(--border-subtle)] shadow-xs shrink-0"
+                        style={{ backgroundColor: t.colors.accent }}
+                      />
                       <span>{t.name}</span>
                     </div>
                     {isSelected && <Check className="w-3 h-3 text-[var(--accent)]" />}
